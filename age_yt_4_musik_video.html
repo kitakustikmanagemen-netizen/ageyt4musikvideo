@@ -1,0 +1,3141 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGE YT#4 Musik Video — Visualizer Editor Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Poppins:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            500: '#10b981',
+                            600: '#059669',
+                            dark: '#080b10',
+                            panel: '#111827',
+                            border: '#1f2937',
+                            accent: '#6366f1',
+                            pink: '#ec4899'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        bebas: ['Bebas Neue', 'sans-serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif'],
+                        playfair: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080b10;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+        .ratio-9-16 { aspect-ratio: 9 / 16; }
+        .ratio-1-1 { aspect-ratio: 1 / 1; }
+        .ratio-16-9 { aspect-ratio: 16 / 9; }
+
+        .text-overlay-node {
+            cursor: move;
+            user-select: none;
+            transition: outline 0.15s ease, background 0.15s ease;
+        }
+        .text-overlay-node.selected {
+            outline: 2px dashed #10b981;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 6px;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details summary {
+            list-style: none;
+        }
+        details[open] summary i.chevron-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col overflow-x-hidden selection:bg-brand-500 selection:text-black">
+
+    <header class="border-b border-brand-border bg-brand-panel/90 backdrop-blur-md sticky top-0 z-40 px-3 sm:px-5 py-2.5 flex items-center justify-between shadow-md">
+        <div class="flex items-center space-x-2.5 sm:space-x-3">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-brand-500 via-brand-accent to-brand-pink flex items-center justify-center shadow-lg shadow-brand-500/20 shrink-0">
+                <i class="fa-solid font-bold fa-compact-disc text-white text-base sm:text-lg animate-spin" style="animation-duration: 8s;"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold tracking-wider text-sm sm:text-lg bg-gradient-to-r from-white via-slate-200 to-brand-500 bg-clip-text text-transparent flex items-center gap-2">
+                    AGE YT#4 <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold tracking-normal hidden sm:inline-block">Musik Video Studio</span>
+                </h1>
+                <p class="text-[10px] sm:text-[11px] text-slate-400 hidden md:block">Editor Visualizer Musik Pro dengan FX Teks, Overlay & Recording Studio</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-1.5 sm:space-x-2">
+            <button id="btnNewProject" class="px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1.5 border border-slate-700">
+                <i class="fa-solid fa-rotate-left text-slate-400"></i> <span class="hidden sm:inline">Reset</span>
+            </button>
+            <button id="btnSavePreset" class="px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1.5 border border-slate-700">
+                <i class="fa-solid fa-floppy-disk text-brand-500"></i> <span class="hidden sm:inline">Simpan Preset</span>
+            </button>
+            <button id="btnOpenExportModal" class="px-3 sm:px-4 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-500 text-slate-950 transition flex items-center gap-1.5 shadow-lg shadow-brand-500/20">
+                <i class="fa-solid fa-video"></i> <span>Rekam Video</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 p-2.5 sm:p-4 max-w-[1750px] mx-auto w-full">
+
+        <!-- LEFT / CENTER COLUMN: CANVAS PREVIEW & AUDIO PLAYER -->
+        <section class="lg:col-span-7 xl:col-span-7 flex flex-col gap-3 items-center">
+            
+            <!-- ASPECT RATIO TOOLBAR -->
+            <div class="w-full bg-brand-panel border border-brand-border rounded-xl p-2 sm:p-2.5 flex items-center justify-between shadow-sm overflow-x-auto">
+                <div class="flex items-center space-x-1.5 shrink-0">
+                    <span class="text-xs text-slate-400 font-medium mr-1 hidden sm:inline"><i class="fa-solid fa-crop-simple text-slate-500 mr-1"></i>Rasio:</span>
+                    <button data-ratio="9:16" class="btn-aspect px-2.5 py-1 text-xs rounded-md bg-brand-500/20 text-brand-500 font-semibold border border-brand-500/40 transition flex items-center gap-1">
+                        <i class="fa-solid fa-mobile-screen"></i> 9:16
+                    </button>
+                    <button data-ratio="1:1" class="btn-aspect px-2.5 py-1 text-xs rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1">
+                        <i class="fa-solid fa-square"></i> 1:1
+                    </button>
+                    <button data-ratio="16:9" class="btn-aspect px-2.5 py-1 text-xs rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1">
+                        <i class="fa-solid fa-tv"></i> 16:9
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-2 text-xs text-slate-400 shrink-0">
+                    <span id="canvasResBadge" class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-mono text-brand-400">720 x 1280</span>
+                </div>
+            </div>
+
+            <!-- CANVAS PREVIEW WORKSPACE -->
+            <div class="w-full flex-1 flex items-center justify-center min-h-[350px] max-h-[640px] p-2 bg-slate-950 border border-brand-border rounded-2xl relative overflow-hidden shadow-2xl group" id="dropzoneArea">
+                
+                <div id="canvasContainer" class="relative ratio-9-16 h-full max-h-[600px] max-w-full flex items-center justify-center border border-slate-800 rounded-xl overflow-hidden shadow-inner bg-[#080b10]">
+                    
+                    <canvas id="visualizerCanvas" class="w-full h-full object-contain block"></canvas>
+
+                    <div id="textOverlayContainer" class="absolute inset-0 pointer-events-auto select-none overflow-hidden">
+                    </div>
+
+                    <div id="dropzoneOverlay" class="absolute inset-0 bg-brand-500/20 backdrop-blur-sm border-2 border-dashed border-brand-500 flex flex-col items-center justify-center pointer-events-none opacity-0 transition-opacity z-20">
+                        <i class="fa-solid fa-file-arrow-up text-4xl text-brand-500 mb-2 animate-bounce"></i>
+                        <p class="text-sm font-bold text-white">Lepaskan file di sini (Audio / Gambar / Video)</p>
+                    </div>
+
+                    <div id="emptyAudioPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center pointer-events-none bg-slate-950/70 backdrop-blur-[2px] transition-opacity duration-300 z-10">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 flex items-center justify-center mb-3 text-brand-500 shadow-lg shadow-brand-500/10">
+                            <i class="fa-solid fa-music text-2xl animate-pulse"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-200 text-sm">Belum Ada File Audio</h3>
+                        <p class="text-xs text-slate-400 max-w-xs mt-1">Upload lagu MP3 / WAV di tab "Audio" atau seret file langsung ke area canvas ini.</p>
+                    </div>
+
+                    <div id="recStatusBadge" class="hidden absolute top-3 left-3 bg-red-600/90 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full flex items-center gap-2 font-bold shadow-lg animate-pulse z-30">
+                        <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                        <span id="recTimerText">REC 00:00</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- AUDIO PLAYER SCRUBBER & CONTROLS -->
+            <div class="w-full bg-brand-panel border border-brand-border rounded-xl p-3 shadow-lg flex flex-col gap-2">
+                <div class="flex items-center gap-3">
+                    <span id="timeCurrent" class="text-xs font-mono text-slate-400 w-10 text-right">0:00</span>
+                    <input type="range" id="audioScrubber" min="0" max="100" value="0" step="0.1" disabled
+                           class="flex-1 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-brand-500">
+                    <span id="timeTotal" class="text-xs font-mono text-slate-400 w-10">0:00</span>
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                    <div class="flex items-center space-x-3">
+                        <button id="btnPlayPause" disabled class="w-10 h-10 rounded-full bg-brand-500 hover:bg-brand-600 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-bold flex items-center justify-center transition shadow-md shadow-brand-500/20">
+                            <i id="playIcon" class="fa-solid fa-play text-sm ml-0.5"></i>
+                        </button>
+
+                        <div class="text-left max-w-[160px] sm:max-w-xs truncate">
+                            <p id="audioFileName" class="text-xs font-semibold text-slate-200 truncate">Tidak ada audio terpilih</p>
+                            <p id="audioFormatBadge" class="text-[10px] text-slate-500 font-mono">Status: Idle</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2.5">
+                        <div class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-volume-high text-xs text-slate-400"></i>
+                            <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="1" class="w-14 sm:w-18 h-1.5 bg-slate-700 rounded appearance-none accent-brand-500 cursor-pointer">
+                        </div>
+
+                        <button id="btnRemoveAudio" title="Hapus Audio" class="p-2 text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: CONTROL TABS WITH ACCORDIONS -->
+        <section class="lg:col-span-5 xl:col-span-5 bg-brand-panel border border-brand-border rounded-2xl flex flex-col h-[750px] lg:h-auto shadow-xl overflow-hidden">
+            
+            <div class="flex overflow-x-auto border-b border-brand-border bg-slate-950/80 p-1 text-xs no-scrollbar sticky top-0 z-10">
+                <button data-tab="tab-audio" class="tab-btn active min-w-[65px] flex-1 py-2.5 flex flex-col items-center gap-1 font-semibold text-brand-500 border-b-2 border-brand-500 transition shrink-0">
+                    <i class="fa-solid fa-music text-sm"></i><span class="text-[10px]">Audio</span>
+                </button>
+                <button data-tab="tab-vis" class="tab-btn min-w-[65px] flex-1 py-2.5 flex flex-col items-center gap-1 font-medium text-slate-400 hover:text-slate-200 transition shrink-0">
+                    <i class="fa-solid fa-chart-simple text-sm"></i><span class="text-[10px]">Visual</span>
+                </button>
+                <button data-tab="tab-bg" class="tab-btn min-w-[65px] flex-1 py-2.5 flex flex-col items-center gap-1 font-medium text-slate-400 hover:text-slate-200 transition shrink-0">
+                    <i class="fa-solid fa-image text-sm"></i><span class="text-[10px]">Latar</span>
+                </button>
+                <button data-tab="tab-overlay" class="tab-btn min-w-[65px] flex-1 py-2.5 flex flex-col items-center gap-1 font-medium text-slate-400 hover:text-slate-200 transition shrink-0">
+                    <i class="fa-solid fa-layer-group text-sm"></i><span class="text-[10px]">Overlay</span>
+                </button>
+                <button data-tab="tab-text" class="tab-btn min-w-[65px] flex-1 py-2.5 flex flex-col items-center gap-1 font-medium text-slate-400 hover:text-slate-200 transition shrink-0">
+                    <i class="fa-solid fa-font text-sm"></i><span class="text-[10px]">Teks</span>
+                </button>
+                <button data-tab="tab-export" class="tab-btn min-w-[65px] flex-1 py-2.5 flex flex-col items-center gap-1 font-medium text-slate-400 hover:text-slate-200 transition shrink-0">
+                    <i class="fa-solid fa-film text-sm"></i><span class="text-[10px]">Ekspor</span>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-4">
+
+                <!-- TAB 1: AUDIO UPLOAD & INFO -->
+                <div id="tab-audio" class="tab-content space-y-4">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5">Source Audio</h3>
+                        <p class="text-xs text-slate-400">Pilih file lagu atau voiceover untuk mendatangkan visualisasi.</p>
+                    </div>
+
+                    <div class="border-2 border-dashed border-slate-700 hover:border-brand-500/60 bg-slate-900/50 hover:bg-slate-900 transition rounded-xl p-5 text-center flex flex-col items-center justify-center cursor-pointer group" onclick="document.getElementById('audioInput').click()">
+                        <input type="file" id="audioInput" accept="audio/*" class="hidden">
+                        <div class="w-12 h-12 rounded-2xl bg-brand-500/10 group-hover:bg-brand-500/20 text-brand-500 flex items-center justify-center mb-2 transition shadow-inner">
+                            <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-200">Klik untuk upload file Audio</p>
+                        <p class="text-[11px] text-slate-500 mt-1">Mendukung Format: MP3, WAV, M4A, AAC, OGG</p>
+                    </div>
+
+                    <div id="audioMetaBox" class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 text-xs space-y-2 hidden shadow-inner">
+                        <div class="flex justify-between items-center text-slate-300">
+                            <span class="text-slate-500">Nama File:</span>
+                            <span id="metaFileName" class="font-mono text-slate-200 truncate max-w-[180px]">-</span>
+                        </div>
+                        <div class="flex justify-between items-center text-slate-300">
+                            <span class="text-slate-500">Durasi:</span>
+                            <span id="metaDuration" class="font-mono text-brand-500 font-bold">00:00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-slate-300">
+                            <span class="text-slate-500">Sample Rate:</span>
+                            <span id="metaSampleRate" class="font-mono text-slate-400">44.1 kHz</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: VISUALIZER CONFIG (11 STYLES TOTAL) -->
+                <div id="tab-vis" class="tab-content hidden space-y-4">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5">Gaya Visualizer (11 Preset)</h3>
+                        <p class="text-xs text-slate-400">Pilih mode tampilan spektrum frekuensi audio.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                        <button data-style="spectrum" class="btn-vis-style p-2.5 rounded-xl border border-brand-500 bg-brand-500/10 text-slate-200 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-chart-simple text-brand-500 text-base"></i>
+                            <div><p class="text-xs font-bold">1. Bar Spektrum</p><p class="text-[10px] text-slate-400">Klasik Vertikal</p></div>
+                        </button>
+                        <button data-style="waveform" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-wave-square text-brand-accent text-base"></i>
+                            <div><p class="text-xs font-bold">2. Waveform</p><p class="text-[10px] text-slate-400">Garis Gelombang</p></div>
+                        </button>
+                        <button data-style="radial" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-sun text-brand-pink text-base"></i>
+                            <div><p class="text-xs font-bold">3. Radial Sun</p><p class="text-[10px] text-slate-400">Lingkaran Memancar</p></div>
+                        </button>
+                        <button data-style="particles" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-circle-nodes text-yellow-400 text-base"></i>
+                            <div><p class="text-xs font-bold">4. Partikel Dots</p><p class="text-[10px] text-slate-400">Titik Reaktif</p></div>
+                        </button>
+                        <button data-style="mirror_bars" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-arrows-up-down text-emerald-400 text-base"></i>
+                            <div><p class="text-xs font-bold">5. Mirror Bars</p><p class="text-[10px] text-slate-400">Spektrum Simetris</p></div>
+                        </button>
+                        <button data-style="circular_waveform" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-arrows-spin text-cyan-400 text-base"></i>
+                            <div><p class="text-xs font-bold">6. Circular Wave</p><p class="text-[10px] text-slate-400">Waveform Lingkar</p></div>
+                        </button>
+                        <button data-style="bars_3d" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-cubes text-purple-400 text-base"></i>
+                            <div><p class="text-xs font-bold">7. Bar 3D Blok</p><p class="text-[10px] text-slate-400">Balok Volume</p></div>
+                        </button>
+                        <button data-style="liquid_blob" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-droplet text-blue-400 text-base"></i>
+                            <div><p class="text-xs font-bold">8. Liquid Blob</p><p class="text-[10px] text-slate-400">Cairan Organik</p></div>
+                        </button>
+                        <button data-style="starburst" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-star text-orange-400 text-base"></i>
+                            <div><p class="text-xs font-bold">9. Starburst</p><p class="text-[10px] text-slate-400">Sinar Bintang</p></div>
+                        </button>
+                        <button data-style="eq_grid" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5">
+                            <i class="fa-solid fa-table-cells text-red-400 text-base"></i>
+                            <div><p class="text-xs font-bold">10. EQ Grid LED</p><p class="text-[10px] text-slate-400">Matriks Kotak</p></div>
+                        </button>
+                        <button data-style="kaleidoscope" class="btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5 col-span-2">
+                            <i class="fa-solid fa-snowflake text-pink-400 text-base"></i>
+                            <div><p class="text-xs font-bold">11. Kaleidoscope</p><p class="text-[10px] text-slate-400">Pola Cermin Simetris 8-Arah</p></div>
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 space-y-3 text-xs">
+                        <div>
+                            <div class="flex justify-between text-slate-300 mb-1">
+                                <span class="font-semibold">Warna Visualizer:</span>
+                                <span id="visColorVal" class="font-mono text-slate-400">Gradient Custom</span>
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="visPrimaryColor" value="#10b981" class="w-8 h-8 rounded border-none cursor-pointer bg-transparent">
+                                <input type="color" id="visSecondaryColor" value="#6366f1" class="w-8 h-8 rounded border-none cursor-pointer bg-transparent">
+                                <select id="visColorPreset" class="flex-1 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
+                                    <option value="gradient">Gradient Custom</option>
+                                    <option value="emerald">Emerald Neon</option>
+                                    <option value="cyberpunk">Cyberpunk Pink/Purple</option>
+                                    <option value="gold">Warm Gold</option>
+                                    <option value="ice">Ice Blue</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300 mb-1">
+                                <span>Sensitivitas / Amplitudo:</span>
+                                <span id="visSensVal" class="font-mono text-brand-500 font-bold">1.5x</span>
+                            </div>
+                            <input type="range" id="visSensitivity" min="0.5" max="3" step="0.1" value="1.5" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300 mb-1">
+                                <span>Posisi Vertikal (Y):</span>
+                                <span id="visPosYVal" class="font-mono text-slate-400">50%</span>
+                            </div>
+                            <input type="range" id="visPosY" min="10" max="90" step="1" value="50" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300 mb-1">
+                                <span>Skala / Ukuran:</span>
+                                <span id="visSizeVal" class="font-mono text-slate-400">100%</span>
+                            </div>
+                            <input type="range" id="visSize" min="30" max="200" step="5" value="100" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300 mb-1">
+                                <span>Ketebalan Garis / Batang:</span>
+                                <span id="visLineWidthVal" class="font-mono text-slate-400">4px</span>
+                            </div>
+                            <input type="range" id="visLineWidth" min="1" max="15" step="1" value="4" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: BACKGROUND CONFIG (WITH COLLAPSIBLE SECTIONS) -->
+                <div id="tab-bg" class="tab-content hidden space-y-3">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5">Media & FX Latar Belakang</h3>
+                        <p class="text-xs text-slate-400">Atur latar AI, upload media, atau sesuaikan filter & motion.</p>
+                    </div>
+
+                    <!-- ACCORDION 1: AI BACKGROUND GENERATOR -->
+                    <details class="group bg-slate-900/60 border border-indigo-500/30 rounded-xl overflow-hidden transition-all shadow-sm" open>
+                        <summary class="p-3 font-bold text-xs text-indigo-300 cursor-pointer flex items-center justify-between bg-indigo-950/40 hover:bg-indigo-900/30 select-none">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i> AI Background Generator
+                            </span>
+                            <i class="chevron-icon fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                        </summary>
+                        
+                        <div class="p-3.5 space-y-3 border-t border-indigo-900/40">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Prompt Deskripsi Gambar:</label>
+                                <div class="flex gap-1.5">
+                                    <input type="text" id="aiPromptInput" placeholder="misal: cyberpunk neon city at night..." class="flex-1 bg-slate-950 border border-indigo-900/60 text-slate-100 px-2.5 py-1.5 rounded-lg text-xs focus:border-indigo-400 outline-none">
+                                    <button id="btnClearAiPrompt" class="px-2 text-slate-400 hover:text-slate-200 text-xs rounded bg-slate-900 border border-slate-800" title="Bersihkan Prompt"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Preset Prompt Cepat:</label>
+                                <div class="grid grid-cols-2 gap-1 text-[10px]" id="aiPromptPresetsGrid">
+                                    <button data-aipreset="cyberpunk" class="btn-ai-preset px-2 py-1 rounded bg-slate-950/80 hover:bg-indigo-900/40 border border-slate-800 hover:border-indigo-500/50 text-slate-300 text-left truncate flex items-center gap-1"><i class="fa-solid fa-city text-pink-400"></i> Neon Cyberpunk</button>
+                                    <button data-aipreset="sunset" class="btn-ai-preset px-2 py-1 rounded bg-slate-950/80 hover:bg-indigo-900/40 border border-slate-800 hover:border-indigo-500/50 text-slate-300 text-left truncate flex items-center gap-1"><i class="fa-solid fa-sun text-amber-400"></i> Sunset Vibes</button>
+                                    <button data-aipreset="abstract" class="btn-ai-preset px-2 py-1 rounded bg-slate-950/80 hover:bg-indigo-900/40 border border-slate-800 hover:border-indigo-500/50 text-slate-300 text-left truncate flex items-center gap-1"><i class="fa-solid fa-shapes text-purple-400"></i> Abstract Dark</button>
+                                    <button data-aipreset="nature" class="btn-ai-preset px-2 py-1 rounded bg-slate-950/80 hover:bg-indigo-900/40 border border-slate-800 hover:border-indigo-500/50 text-slate-300 text-left truncate flex items-center gap-1"><i class="fa-solid fa-tree text-emerald-400"></i> Nature Calm</button>
+                                    <button data-aipreset="retrowave" class="btn-ai-preset px-2 py-1 rounded bg-slate-950/80 hover:bg-indigo-900/40 border border-slate-800 hover:border-indigo-500/50 text-slate-300 text-left truncate flex items-center gap-1"><i class="fa-solid fa-compact-disc text-cyan-400"></i> Retro Wave</button>
+                                    <button data-aipreset="space" class="btn-ai-preset px-2 py-1 rounded bg-slate-950/80 hover:bg-indigo-900/40 border border-slate-800 hover:border-indigo-500/50 text-slate-300 text-left truncate flex items-center gap-1"><i class="fa-solid fa-user-astronaut text-indigo-400"></i> Space Galaxy</button>
+                                </div>
+                            </div>
+
+                            <button id="btnGenerateAiBg" class="w-full py-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20">
+                                <i id="aiGenIcon" class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span id="aiGenText">Generate Background AI</span>
+                            </button>
+
+                            <p class="text-[9px] text-slate-400 italic text-center">Ditenagai Pollinations.ai — gratis tanpa API Key.</p>
+
+                            <div id="aiHistoryWrapper" class="hidden pt-2 border-t border-indigo-900/40 space-y-1">
+                                <label class="block text-[10px] font-semibold text-slate-300">Riwayat Generate Sesi Ini:</label>
+                                <div id="aiHistoryGrid" class="grid grid-cols-4 gap-1.5"></div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- ACCORDION 2: MEDIA UPLOAD & PRESETS -->
+                    <details class="group bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden transition-all shadow-sm">
+                        <summary class="p-3 font-bold text-xs text-slate-200 cursor-pointer flex items-center justify-between hover:bg-slate-800/40 select-none">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-folder-open text-brand-500"></i> File Media & Preset Latar
+                            </span>
+                            <i class="chevron-icon fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                        </summary>
+
+                        <div class="p-3.5 space-y-3 border-t border-slate-800">
+                            <div class="border-2 border-dashed border-slate-700 hover:border-brand-500/60 bg-slate-950/50 hover:bg-slate-900 transition rounded-xl p-3.5 text-center flex flex-col items-center justify-center cursor-pointer" onclick="document.getElementById('bgFileInput').click()">
+                                <input type="file" id="bgFileInput" accept="image/*,video/*" class="hidden">
+                                <i class="fa-solid fa-file-image text-slate-400 text-lg mb-1"></i>
+                                <p class="text-xs font-semibold text-slate-200">Upload Gambar (JPG/PNG) / Video (MP4)</p>
+                            </div>
+
+                            <div id="bgInfoBar" class="hidden flex items-center justify-between bg-slate-950 border border-slate-800 p-2 rounded-lg text-xs">
+                                <div class="flex items-center space-x-2 truncate">
+                                    <i id="bgTypeIcon" class="fa-solid fa-image text-brand-500"></i>
+                                    <span id="bgFileNameText" class="truncate text-slate-300 max-w-[160px]">bg.jpg</span>
+                                </div>
+                                <button id="btnRemoveBg" class="text-red-400 hover:text-red-300 text-xs px-2 py-1 bg-red-500/10 rounded transition">
+                                    <i class="fa-solid fa-trash mr-1"></i>Hapus
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Mode Fit Latar:</label>
+                                    <select id="bgFitMode" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
+                                        <option value="cover">Cover (Penuh Canvas)</option>
+                                        <option value="contain">Contain (Proporsional)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Warna Latar Solid:</label>
+                                    <input type="color" id="bgColorPicker" value="#080b10" class="w-full h-8 rounded border border-slate-800 cursor-pointer bg-slate-950">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 text-xs">
+                                <div>
+                                    <div class="flex justify-between text-slate-300 mb-1">
+                                        <span>Opacity Latar:</span>
+                                        <span id="bgOpacityVal" class="font-mono text-slate-400">100%</span>
+                                    </div>
+                                    <input type="range" id="bgOpacity" min="0" max="100" value="100" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-slate-300 mb-1">
+                                        <span>Gelap / Dim Overlay:</span>
+                                        <span id="bgDimVal" class="font-mono text-slate-400">30%</span>
+                                    </div>
+                                    <input type="range" id="bgDim" min="0" max="100" value="30" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-slate-300 mb-1">
+                                        <span>Efek Blur Latar:</span>
+                                        <span id="bgBlurVal" class="font-mono text-slate-400">0px</span>
+                                    </div>
+                                    <input type="range" id="bgBlur" min="0" max="20" value="0" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Preset Latar Motion:</label>
+                                <div class="grid grid-cols-2 gap-1.5 text-xs">
+                                    <button data-bgpreset="cyberpunk" class="btn-bg-preset p-2 rounded-lg border border-slate-800 bg-slate-950 hover:border-brand-500 text-slate-300 transition text-left flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-gradient-to-r from-pink-500 to-purple-600"></span> Cyberpunk
+                                    </button>
+                                    <button data-bgpreset="aurora" class="btn-bg-preset p-2 rounded-lg border border-slate-800 bg-slate-950 hover:border-brand-500 text-slate-300 transition text-left flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-600"></span> Cosmic Aurora
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- ACCORDION 3: FX MOTION & FILTER WARNA -->
+                    <details class="group bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden transition-all shadow-sm">
+                        <summary class="p-3 font-bold text-xs text-slate-200 cursor-pointer flex items-center justify-between hover:bg-slate-800/40 select-none">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-brand-accent"></i> Filter Warna & Motion FX
+                            </span>
+                            <i class="chevron-icon fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                        </summary>
+
+                        <div class="p-3.5 space-y-3 border-t border-slate-800 text-xs">
+                            <div>
+                                <h4 class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">Motion Background:</h4>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button data-bgmotion="none" class="btn-bg-motion-fx p-1.5 rounded-lg border border-brand-500 bg-brand-500/10 text-slate-200 font-semibold transition text-center text-[11px]">Normal</button>
+                                    <button data-bgmotion="pan" class="btn-bg-motion-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Pan</button>
+                                    <button data-bgmotion="denyut" class="btn-bg-motion-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Denyut</button>
+                                    <button data-bgmotion="blitz" class="btn-bg-motion-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Blitz</button>
+                                    <button data-bgmotion="flash" class="btn-bg-motion-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Flash</button>
+                                    <button data-bgmotion="vignette" class="btn-bg-motion-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Vignette</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">Filter Warna:</h4>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button data-bgfilter="none" class="btn-bg-filter-fx p-1.5 rounded-lg border border-brand-500 bg-brand-500/10 text-slate-200 font-semibold transition text-center text-[11px]">Normal</button>
+                                    <button data-bgfilter="warm" class="btn-bg-filter-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Warm</button>
+                                    <button data-bgfilter="cool" class="btn-bg-filter-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Cool</button>
+                                    <button data-bgfilter="mono" class="btn-bg-filter-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Mono</button>
+                                    <button data-bgfilter="contrast" class="btn-bg-filter-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Contrast</button>
+                                    <button data-bgfilter="dream" class="btn-bg-filter-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]">Dream</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>Sensitivitas FX Audio:</span>
+                                    <span id="bgFxSensVal" class="font-mono text-brand-500 font-bold">1.0x</span>
+                                </div>
+                                <input type="range" id="bgFxSens" min="0.1" max="3.0" step="0.1" value="1.0" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>Intensitas Warna FX Filter:</span>
+                                    <span id="bgFxColorIntensityVal" class="font-mono text-slate-400">50%</span>
+                                </div>
+                                <input type="range" id="bgFxColorIntensity" min="0" max="100" step="5" value="50" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- TAB OVERLAY: MULTI-IMAGE, FX & ANIMATIONS -->
+                <div id="tab-overlay" class="tab-content hidden space-y-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5">Multi Overlay / Watermark</h3>
+                            <p class="text-xs text-slate-400">Tambah logo watermark atau dekorasi transparan.</p>
+                        </div>
+                        <button id="btnAddOverlay" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold rounded-lg text-xs transition flex items-center gap-1 shadow-md" onclick="document.getElementById('overlayFileInput').click()">
+                            <i class="fa-solid fa-plus"></i> Overlay
+                        </button>
+                        <input type="file" id="overlayFileInput" accept="image/*" multiple class="hidden">
+                    </div>
+
+                    <div id="overlayListContainer" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                        <div class="p-3 text-center border border-dashed border-slate-800 rounded-xl text-slate-500 text-xs">
+                            <i class="fa-solid fa-layer-group text-slate-600 text-lg mb-1 block"></i>
+                            Belum ada overlay. Klik "+ Overlay" untuk menambah logo / watermark.
+                        </div>
+                    </div>
+
+                    <div id="selectedOverlayEditor" class="space-y-3 text-xs bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 hidden">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                            <h4 class="text-xs font-bold text-brand-500 flex items-center gap-1.5">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit Overlay Terpilih
+                            </h4>
+                            <button id="btnDeleteSelectedOverlay" class="text-red-400 hover:text-red-300 text-xs">
+                                <i class="fa-solid fa-trash mr-1"></i>Hapus
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-400 mb-1">Nama Layer:</label>
+                            <input type="text" id="overlayNameInput" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-2 text-xs focus:border-brand-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 mb-1 font-semibold">Efek Visual (FX Overlay):</label>
+                            <div class="grid grid-cols-2 gap-1.5" id="overlayFxGrid">
+                                <button data-overlayfx="none" class="btn-overlay-fx px-2 py-1.5 rounded border border-brand-500 bg-brand-500/10 text-slate-200 font-semibold text-center text-[10px]">1. Normal</button>
+                                <button data-overlayfx="glow" class="btn-overlay-fx px-2 py-1.5 rounded border border-slate-800 bg-slate-900 text-slate-400 text-center text-[10px]">2. Glow Outline</button>
+                                <button data-overlayfx="drop_shadow" class="btn-overlay-fx px-2 py-1.5 rounded border border-slate-800 bg-slate-900 text-slate-400 text-center text-[10px]">3. Drop Shadow</button>
+                                <button data-overlayfx="duotone" class="btn-overlay-fx px-2 py-1.5 rounded border border-slate-800 bg-slate-900 text-slate-400 text-center text-[10px]">4. Duotone Color</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 mb-1 font-semibold">Animasi Motion Overlay:</label>
+                            <select id="overlayAnimSelect" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
+                                <option value="none">1. Tanpa Animasi (Statis)</option>
+                                <option value="pan">2. Pan Loop (Pergeseran)</option>
+                                <option value="denyut">3. Denyut (Beat Pulse Reaktif)</option>
+                                <option value="blitz">4. Blitz (Flicker Kedip)</option>
+                                <option value="flash">5. Flash Burst (Strobe Peak)</option>
+                                <option value="float">6. Float (Naik-Turun Halus)</option>
+                                <option value="shake">7. Shake (Getar Acak)</option>
+                                <option value="zoom">8. Zoom In/Out Loop</option>
+                                <option value="rotate_cw">9. Putar Searah Jam (→)</option>
+                                <option value="rotate_ccw">10. Putar Berlawanan (←)</option>
+                                <option value="orbit">11. Orbit (Memutar Pusat)</option>
+                                <option value="breathing">12. Breathing (Pulsasi Lambat)</option>
+                                <option value="drift">13. Drift (Geser Wrap)</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>Ukuran Skala:</span>
+                                    <span id="overlayScaleVal" class="font-mono text-slate-400">50%</span>
+                                </div>
+                                <input type="range" id="overlayScale" min="10" max="300" value="50" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>Opacity:</span>
+                                    <span id="overlayOpacityVal" class="font-mono text-slate-400">100%</span>
+                                </div>
+                                <input type="range" id="overlayOpacity" min="0" max="100" value="100" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Urutan Layer:</label>
+                                <select id="overlayLayerOrder" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
+                                    <option value="above">Depan Visualizer</option>
+                                    <option value="below">Belakang Visualizer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Blend Mode:</label>
+                                <select id="overlayBlendMode" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
+                                    <option value="source-over">Normal</option>
+                                    <option value="screen">Screen</option>
+                                    <option value="multiply">Multiply</option>
+                                    <option value="overlay">Overlay</option>
+                                    <option value="lighten">Lighten</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <label class="flex items-center space-x-2 text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="overlayChromaBlack" class="rounded accent-brand-500">
+                                <span>Hapus Hitam (Chroma)</span>
+                            </label>
+                            <label class="flex items-center space-x-2 text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="overlayLockPosition" class="rounded accent-brand-500">
+                                <span>Kunci Posisi</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: TEXT OVERLAY CONFIG -->
+                <div id="tab-text" class="tab-content hidden space-y-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5">Teks Overlay Studio</h3>
+                            <p class="text-xs text-slate-400">Kombinasikan FX Teks & Animasi Gerak.</p>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <button id="btnDuplicateText" title="Duplikat Layer Teks" class="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                            <button id="btnAddText" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold rounded-lg text-xs transition flex items-center gap-1 shadow-md">
+                                <i class="fa-solid fa-plus"></i> Tambah
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="textListContainer" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                    </div>
+
+                    <div id="selectedTextEditor" class="space-y-3 text-xs bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                            <h4 class="text-xs font-bold text-brand-500 flex items-center gap-1.5">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit Teks Terpilih
+                            </h4>
+                            <button id="btnDeleteSelectedText" class="text-red-400 hover:text-red-300 text-xs">
+                                <i class="fa-solid fa-trash mr-1"></i>Hapus Layer
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-400 mb-1">Isi Teks:</label>
+                            <input type="text" id="textInputContent" value="AGE YT#4 Musik Video" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-2 text-xs focus:border-brand-500 outline-none">
+                        </div>
+
+                        <!-- TEXT FX GRID (13 EFEK) -->
+                        <div>
+                            <label class="block text-slate-300 mb-1.5 font-semibold">1. Pilihan FX Gaya Teks (13 FX):</label>
+                            <div class="grid grid-cols-3 gap-1 max-h-32 overflow-y-auto pr-1" id="textFxGrid">
+                                <button data-textfx="soft" class="btn-text-fx px-2 py-1 rounded border border-brand-500 bg-brand-500/10 text-slate-200 text-[10px]">Soft Shadow</button>
+                                <button data-textfx="glow" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Glow</button>
+                                <button data-textfx="neon" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Neon</button>
+                                <button data-textfx="outline" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Outline</button>
+                                <button data-textfx="emboss" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Emboss 3D</button>
+                                <button data-textfx="fire" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Api Fire</button>
+                                <button data-textfx="ice" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Es Sparkle</button>
+                                <button data-textfx="chrome" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Chrome Metal</button>
+                                <button data-textfx="rainbow" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Pelangi</button>
+                                <button data-textfx="gold" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Gold Foil</button>
+                                <button data-textfx="glass" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Glass</button>
+                                <button data-textfx="retro" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Retro Dot</button>
+                                <button data-textfx="comic" class="btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px]">Comic Bold</button>
+                            </div>
+                        </div>
+
+                        <!-- TEXT ANIMATION SELECTOR (12 ANIMASI) -->
+                        <div>
+                            <label class="block text-slate-300 mb-1 font-semibold">2. Pilihan Animasi Gerak Teks (12 Animasi):</label>
+                            <select id="textAnimSelect" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
+                                <option value="none">1. Tanpa Animasi (Statis)</option>
+                                <option value="denyut">2. Denyut Pulse (Beat Audio Reaktif)</option>
+                                <option value="pan">3. Pan Loop (Geser Posisi)</option>
+                                <option value="blitz">4. Blitz (Flicker Kedip)</option>
+                                <option value="flash">5. Flash Burst (Spike Peak)</option>
+                                <option value="float">6. Float (Naik-Turun Halus)</option>
+                                <option value="shake">7. Shake (Getar Acak)</option>
+                                <option value="glitch">8. Glitch (RGB Shift Split)</option>
+                                <option value="typewriter">9. Typewriter (Teks Ketik Huruf)</option>
+                                <option value="wave">10. Wave (Gelombang Huruf)</option>
+                                <option value="bounce">11. Bounce (Pantul Masuk)</option>
+                                <option value="flip3d">12. Rotate 3D Flip (Kartu Dibalik)</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Font Family:</label>
+                                <select id="textFontFamily" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
+                                    <option value="Inter">Inter (Sans)</option>
+                                    <option value="Bebas Neue">Bebas Neue (Bold)</option>
+                                    <option value="Montserrat">Montserrat</option>
+                                    <option value="Orbitron">Orbitron (Futuristic)</option>
+                                    <option value="Poppins">Poppins</option>
+                                    <option value="Playfair Display">Playfair (Serif)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Warna Utama:</label>
+                                <input type="color" id="textColorPicker" value="#ffffff" class="w-full h-8 rounded border border-slate-800 cursor-pointer bg-slate-950">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>Ukuran Font:</span>
+                                    <span id="textSizeVal" class="font-mono text-slate-400">36px</span>
+                                </div>
+                                <input type="range" id="textSize" min="12" max="140" value="36" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>Sudut Rotasi:</span>
+                                    <span id="textRotationVal" class="font-mono text-slate-400">0°</span>
+                                </div>
+                                <input type="range" id="textRotation" min="-180" max="180" value="0" class="w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 border-t border-slate-800 pt-2">
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="textStrokeCheckbox" class="rounded accent-brand-500">
+                                <label for="textStrokeCheckbox" class="text-[11px] text-slate-300">Stroke Line</label>
+                                <input type="color" id="textStrokeColorPicker" value="#000000" class="w-5 h-5 rounded cursor-pointer bg-transparent border-none">
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="textBgBoxCheckbox" class="rounded accent-brand-500">
+                                <label for="textBgBoxCheckbox" class="text-[11px] text-slate-300">Background Box</label>
+                                <input type="color" id="textBgBoxColorPicker" value="#000000" class="w-5 h-5 rounded cursor-pointer bg-transparent border-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: RECORD & EXPORT FORMAT OPTIONS -->
+                <div id="tab-export" class="tab-content hidden space-y-4">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5">Rekam Studio Video</h3>
+                        <p class="text-xs text-slate-400">Pilih format output MP4 / WebM dan rekam langsung di browser.</p>
+                    </div>
+
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400">Status Browser Recording:</span>
+                            <span id="mediaRecorderSupportBadge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-400">Mendukung MediaRecorder</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400">Codec Aktif Terdeteksi:</span>
+                            <span id="outputCodecBadge" class="font-mono text-brand-500 text-[11px] font-bold">video/webm;codecs=vp9</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <label class="block font-semibold text-slate-300">Pilih Format Video Output:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="border border-brand-500 bg-brand-500/10 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-200 transition" id="lblFormatWebM">
+                                <div class="flex justify-between items-center">
+                                    <input type="radio" name="exportFormat" value="webm" checked class="accent-brand-500">
+                                    <span class="text-[9px] px-1.5 py-0.2 bg-brand-500/30 text-brand-400 rounded font-semibold">Ukuran Ringan</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold">WebM Video</p>
+                                    <p class="text-[10px] text-slate-400">Optimal Browser Native</p>
+                                </div>
+                            </label>
+
+                            <label class="border border-slate-800 bg-slate-900 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-300 transition" id="lblFormatMP4">
+                                <div class="flex justify-between items-center">
+                                    <input type="radio" name="exportFormat" value="mp4" class="accent-brand-500">
+                                    <span class="text-[9px] px-1.5 py-0.2 bg-slate-800 text-slate-400 rounded font-semibold">Medsos Ready</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold">MP4 Video</p>
+                                    <p class="text-[10px] text-slate-400">Reels / TikTok / IG</p>
+                                </div>
+                            </label>
+                        </div>
+                        <p id="formatNoticeText" class="text-[11px] text-slate-400 italic">WebM = Ukuran file lebih kecil & diproses cepat secara native di browser.</p>
+                    </div>
+
+                    <div class="space-y-2 text-xs border-t border-slate-800 pt-3">
+                        <label class="block font-semibold text-slate-300">Pilih Resolusi Video Canvas:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="border border-brand-500 bg-brand-500/10 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between text-slate-200 transition" id="lblRes720">
+                                <div class="flex justify-between items-center">
+                                    <input type="radio" name="recRes" value="720" checked class="accent-brand-500">
+                                    <span class="text-[9px] px-1.5 py-0.2 bg-brand-500/30 text-brand-400 rounded font-semibold">Disarankan HP</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold">720p HD</p>
+                                    <p class="text-[10px] text-slate-400">Cepat & Ringan</p>
+                                </div>
+                            </label>
+
+                            <label class="border border-slate-800 bg-slate-900 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between text-slate-300 transition" id="lblRes1080">
+                                <div class="flex justify-between items-center">
+                                    <input type="radio" name="recRes" value="1080" class="accent-brand-500">
+                                    <span class="text-[9px] px-1.5 py-0.2 bg-slate-800 text-slate-400 rounded font-semibold">Desktop Pro</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold">1080p Full HD</p>
+                                    <p class="text-[10px] text-slate-400">Kualitas Tajam</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <button id="btnStartRecording" class="w-full py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-red-600/30">
+                            <i class="fa-solid fa-circle text-xs animate-ping"></i>
+                            <span>Mulai Merekam Video</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- EXPORT DOWNLOAD MODAL -->
+    <div id="videoExportModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-brand-panel border border-brand-border rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-brand-border pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-check text-brand-500 text-xl"></i>
+                    <h3 class="font-bold text-slate-100 text-base">Rekaman Video Selesai!</h3>
+                </div>
+                <button id="btnCloseModal" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="w-full bg-black rounded-xl overflow-hidden aspect-[9/16] max-h-[340px] flex items-center justify-center border border-slate-800">
+                <video id="recordedVideoPlayer" controls class="w-full h-full object-contain"></video>
+            </div>
+
+            <div class="space-y-1 text-xs">
+                <label class="text-slate-400 font-semibold">Nama File Simpan:</label>
+                <div class="flex gap-2">
+                    <input type="text" id="exportFileName" value="AGE_YT4_Musik_Video" class="flex-1 bg-slate-900 border border-slate-800 text-slate-100 px-3 py-2 rounded-lg text-xs focus:border-brand-500 outline-none">
+                    <span id="exportExtBadge" class="bg-slate-800 text-slate-300 px-3 py-2 rounded-lg font-mono text-xs flex items-center font-bold">.webm</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-1">
+                <button id="btnDownloadVideo" class="flex-1 py-2.5 bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-download"></i> Download Video
+                </button>
+                <button id="btnCloseModal2" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT APP LOGIC -->
+    <script>
+        // Offscreen noise texture cache for fast grain rendering
+        let cachedNoiseCanvas = null;
+        function getNoisePatternCanvas() {
+            if (!cachedNoiseCanvas) {
+                cachedNoiseCanvas = document.createElement('canvas');
+                cachedNoiseCanvas.width = 128;
+                cachedNoiseCanvas.height = 128;
+                const nCtx = cachedNoiseCanvas.getContext('2d');
+                const imgData = nCtx.createImageData(128, 128);
+                const data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    const val = Math.floor(Math.random() * 255);
+                    data[i] = val;
+                    data[i+1] = val;
+                    data[i+2] = val;
+                    data[i+3] = 22; // subtle opacity noise
+                }
+                nCtx.putImageData(imgData, 0, 0);
+            }
+            return cachedNoiseCanvas;
+        }
+
+        function updateOverlayFxButtonsUI(activeFx) {
+            document.querySelectorAll('.btn-overlay-fx').forEach(btn => {
+                if (btn.getAttribute('data-overlayfx') === activeFx) {
+                    btn.className = "btn-overlay-fx px-2 py-1.5 rounded border-2 border-brand-500 bg-brand-500/20 text-brand-300 font-bold text-center text-[10px] shadow-sm shadow-brand-500/20";
+                } else {
+                    btn.className = "btn-overlay-fx px-2 py-1.5 rounded border border-slate-800 bg-slate-900 text-slate-400 text-center text-[10px] hover:bg-slate-800 hover:text-slate-200";
+                }
+            });
+        }
+
+        function updateTextFxGridUI(activeFx) {
+            document.querySelectorAll('.btn-text-fx').forEach(btn => {
+                if (btn.getAttribute('data-textfx') === activeFx) {
+                    btn.className = "btn-text-fx px-2 py-1 rounded border-2 border-brand-500 bg-brand-500/20 text-brand-300 font-bold text-[10px] shadow-sm shadow-brand-500/20";
+                } else {
+                    btn.className = "btn-text-fx px-2 py-1 rounded border border-slate-800 bg-slate-900 text-slate-400 text-[10px] hover:bg-slate-800 hover:text-slate-200";
+                }
+            });
+        }
+
+        const APP_STATE = {
+            // Audio System State
+            audioContext: null,
+            audioSource: null,
+            analyserNode: null,
+            mediaStreamDest: null,
+            audioElement: null,
+            isAudioLoaded: false,
+            isPlaying: false,
+
+            // Performance & FPS Monitoring State
+            fps: 0,
+            lastFrameTime: performance.now(),
+            freqData: new Uint8Array(256),
+
+            // AI Background State
+            aiBgHistory: [],
+
+            // Visualizer Configuration State
+            visStyle: 'spectrum',
+            visPrimaryColor: '#10b981',
+            visSecondaryColor: '#6366f1',
+            visSensitivity: 1.5,
+            visPosY: 50,
+            visSize: 100,
+            visLineWidth: 4,
+
+            // Aspect Ratio & Resolution State
+            aspectRatio: '9:16',
+            resMultiplier: 720,
+            exportFormat: 'webm',
+
+            // Background Configuration State
+            bgType: 'none',
+            bgPresetName: 'cyberpunk',
+            bgElement: null,
+            bgFitMode: 'cover',
+            bgColor: '#080b10',
+            bgOpacity: 1.0,
+            bgDim: 0.3,
+            bgBlur: 0,
+
+            // Background Motion FX & Color Filters State
+            bgMotionFx: 'none',
+            bgFilterFx: 'none',
+            bgFxSens: 1.0,
+            bgFxColorIntensity: 0.5,
+
+            // Multi Overlay Layers
+            overlays: [],
+            selectedOverlayId: null,
+
+            // Text Overlay Layers
+            textOverlays: [
+                {
+                    id: 1,
+                    text: "AGE YT#4 Musik Video",
+                    font: "Orbitron",
+                    size: 36,
+                    color: "#ffffff",
+                    fx: "neon",
+                    anim: "denyut",
+                    rotation: 0,
+                    stroke: false,
+                    strokeColor: "#000000",
+                    bgBox: false,
+                    bgBoxColor: "rgba(0,0,0,0.6)",
+                    x: 50,
+                    y: 25
+                }
+            ],
+            selectedTextId: 1,
+
+            // Recording Engine State
+            isRecording: false,
+            mediaRecorder: null,
+            recordedChunks: [],
+            recStartTime: 0,
+            recTimerInterval: null,
+            recordedBlobUrl: null,
+            actualExportExt: 'webm'
+        };
+
+        const DOM = {};
+
+        window.addEventListener('DOMContentLoaded', () => {
+            cacheDOMElements();
+            initAudioContextAndPlayer();
+            initTabsAndInputs();
+            initAspectRatios();
+            initBackgroundSystem();
+            initBackgroundFxSystem();
+            initAiBackgroundSystem();
+            initOverlaySystem();
+            initTextOverlaySystem();
+            initDragAndDropSystem();
+            initRecordingEngine();
+            loadProjectFromLocalStorage();
+
+            requestAnimationFrame(renderCanvasLoop);
+        });
+
+        function cacheDOMElements() {
+            DOM.canvas = document.getElementById('visualizerCanvas');
+            DOM.ctx = DOM.canvas.getContext('2d');
+            DOM.canvasContainer = document.getElementById('canvasContainer');
+            DOM.textContainer = document.getElementById('textOverlayContainer');
+            DOM.emptyPlaceholder = document.getElementById('emptyAudioPlaceholder');
+
+            DOM.audioInput = document.getElementById('audioInput');
+            DOM.btnPlayPause = document.getElementById('btnPlayPause');
+            DOM.playIcon = document.getElementById('playIcon');
+            DOM.audioScrubber = document.getElementById('audioScrubber');
+            DOM.timeCurrent = document.getElementById('timeCurrent');
+            DOM.timeTotal = document.getElementById('timeTotal');
+            DOM.audioFileName = document.getElementById('audioFileName');
+            DOM.audioFormatBadge = document.getElementById('audioFormatBadge');
+            DOM.volumeControl = document.getElementById('volumeControl');
+            DOM.btnRemoveAudio = document.getElementById('btnRemoveAudio');
+
+            DOM.audioMetaBox = document.getElementById('audioMetaBox');
+            DOM.metaFileName = document.getElementById('metaFileName');
+            DOM.metaDuration = document.getElementById('metaDuration');
+            DOM.metaSampleRate = document.getElementById('metaSampleRate');
+
+            DOM.bgFileInput = document.getElementById('bgFileInput');
+            DOM.bgInfoBar = document.getElementById('bgInfoBar');
+            DOM.bgFileNameText = document.getElementById('bgFileNameText');
+            DOM.btnRemoveBg = document.getElementById('btnRemoveBg');
+            DOM.bgTypeIcon = document.getElementById('bgTypeIcon');
+
+            DOM.overlayFileInput = document.getElementById('overlayFileInput');
+            DOM.overlayListContainer = document.getElementById('overlayListContainer');
+            DOM.selectedOverlayEditor = document.getElementById('selectedOverlayEditor');
+
+            DOM.recStatusBadge = document.getElementById('recStatusBadge');
+            DOM.recTimerText = document.getElementById('recTimerText');
+            DOM.btnStartRecording = document.getElementById('btnStartRecording');
+            DOM.videoExportModal = document.getElementById('videoExportModal');
+            DOM.recordedVideoPlayer = document.getElementById('recordedVideoPlayer');
+            DOM.exportFileName = document.getElementById('exportFileName');
+            DOM.btnDownloadVideo = document.getElementById('btnDownloadVideo');
+
+            DOM.btnSavePreset = document.getElementById('btnSavePreset');
+            DOM.btnNewProject = document.getElementById('btnNewProject');
+            DOM.canvasResBadge = document.getElementById('canvasResBadge');
+            DOM.dropzoneOverlay = document.getElementById('dropzoneOverlay');
+            DOM.dropzoneArea = document.getElementById('dropzoneArea');
+        }
+
+        function initAudioContextAndPlayer() {
+            DOM.audioElement = new Audio();
+            DOM.audioElement.crossOrigin = "anonymous";
+
+            DOM.audioInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                handleAudioFileUpload(file);
+            });
+
+            DOM.audioElement.addEventListener('loadedmetadata', () => {
+                const dur = DOM.audioElement.duration || 0;
+                DOM.audioScrubber.max = dur;
+                DOM.timeTotal.textContent = formatTime(dur);
+                DOM.metaDuration.textContent = formatTime(dur);
+                if (APP_STATE.audioContext) {
+                    DOM.metaSampleRate.textContent = `${(APP_STATE.audioContext.sampleRate / 1000).toFixed(1)} kHz`;
+                }
+            });
+
+            DOM.audioElement.addEventListener('timeupdate', () => {
+                if (!APP_STATE.isRecording) {
+                    DOM.audioScrubber.value = DOM.audioElement.currentTime;
+                    DOM.timeCurrent.textContent = formatTime(DOM.audioElement.currentTime);
+                }
+            });
+
+            DOM.audioElement.addEventListener('ended', () => {
+                APP_STATE.isPlaying = false;
+                DOM.playIcon.className = "fa-solid fa-play text-sm ml-0.5";
+                if (APP_STATE.isRecording) {
+                    stopRecordingProcess();
+                }
+            });
+
+            DOM.btnPlayPause.addEventListener('click', toggleAudioPlayback);
+
+            DOM.audioScrubber.addEventListener('input', (e) => {
+                if (DOM.audioElement) {
+                    DOM.audioElement.currentTime = parseFloat(e.target.value);
+                    DOM.timeCurrent.textContent = formatTime(DOM.audioElement.currentTime);
+                }
+            });
+
+            DOM.volumeControl.addEventListener('input', (e) => {
+                DOM.audioElement.volume = parseFloat(e.target.value);
+            });
+
+            DOM.btnRemoveAudio.addEventListener('click', () => {
+                DOM.audioElement.pause();
+                DOM.audioElement.src = "";
+                APP_STATE.isAudioLoaded = false;
+                APP_STATE.isPlaying = false;
+
+                DOM.btnPlayPause.disabled = true;
+                DOM.audioScrubber.disabled = true;
+                DOM.audioScrubber.value = 0;
+                DOM.timeCurrent.textContent = "0:00";
+                DOM.timeTotal.textContent = "0:00";
+                DOM.audioFileName.textContent = "Tidak ada audio terpilih";
+                DOM.audioFormatBadge.textContent = "Status: Idle";
+                DOM.audioMetaBox.classList.add('hidden');
+                DOM.emptyPlaceholder.classList.remove('opacity-0');
+                DOM.playIcon.className = "fa-solid fa-play text-sm ml-0.5";
+            });
+        }
+
+        function setupWebAudioNodes() {
+            if (APP_STATE.audioContext) return;
+
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            APP_STATE.audioContext = new AudioCtx();
+
+            APP_STATE.audioSource = APP_STATE.audioContext.createMediaElementSource(DOM.audioElement);
+            APP_STATE.analyserNode = APP_STATE.audioContext.createAnalyser();
+            APP_STATE.analyserNode.fftSize = 512;
+            APP_STATE.analyserNode.smoothingTimeConstant = 0.8;
+
+            APP_STATE.mediaStreamDest = APP_STATE.audioContext.createMediaStreamDestination();
+
+            APP_STATE.audioSource.connect(APP_STATE.analyserNode);
+            APP_STATE.analyserNode.connect(APP_STATE.audioContext.destination);
+            APP_STATE.analyserNode.connect(APP_STATE.mediaStreamDest);
+        }
+
+        function toggleAudioPlayback() {
+            if (!APP_STATE.isAudioLoaded) return;
+
+            setupWebAudioNodes();
+
+            if (APP_STATE.audioContext.state === 'suspended') {
+                APP_STATE.audioContext.resume();
+            }
+
+            if (APP_STATE.isPlaying) {
+                DOM.audioElement.pause();
+                if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) {
+                    APP_STATE.bgElement.pause();
+                }
+                APP_STATE.isPlaying = false;
+                DOM.playIcon.className = "fa-solid fa-play text-sm ml-0.5";
+            } else {
+                DOM.audioElement.play().then(() => {
+                    APP_STATE.isPlaying = true;
+                    if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) {
+                        APP_STATE.bgElement.play();
+                    }
+                    DOM.playIcon.className = "fa-solid fa-pause text-sm";
+                }).catch(err => {
+                    console.error("Audio playback error:", err);
+                });
+            }
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60) || 0;
+            const s = Math.floor(seconds % 60) || 0;
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        function initTabsAndInputs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('active', 'text-brand-500', 'border-b-2', 'border-brand-500', 'font-semibold');
+                        b.classList.add('text-slate-400', 'font-medium');
+                    });
+                    btn.classList.add('active', 'text-brand-500', 'border-b-2', 'border-brand-500', 'font-semibold');
+                    btn.classList.remove('text-slate-400', 'font-medium');
+
+                    const targetTab = btn.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                    document.getElementById(targetTab).classList.remove('hidden');
+                });
+            });
+
+            document.querySelectorAll('.btn-vis-style').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.btn-vis-style').forEach(b => {
+                        b.className = "btn-vis-style p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 text-slate-400 text-left transition flex items-center gap-2.5";
+                    });
+                    btn.className = "btn-vis-style p-2.5 rounded-xl border border-brand-500 bg-brand-500/10 text-slate-200 text-left transition flex items-center gap-2.5";
+                    APP_STATE.visStyle = btn.getAttribute('data-style');
+                });
+            });
+
+            document.getElementById('visPrimaryColor').addEventListener('input', (e) => APP_STATE.visPrimaryColor = e.target.value);
+            document.getElementById('visSecondaryColor').addEventListener('input', (e) => APP_STATE.visSecondaryColor = e.target.value);
+            document.getElementById('visColorPreset').addEventListener('change', (e) => {
+                const val = e.target.value;
+                if (val === 'emerald') { APP_STATE.visPrimaryColor = "#10b981"; APP_STATE.visSecondaryColor = "#064e3b"; }
+                else if (val === 'cyberpunk') { APP_STATE.visPrimaryColor = "#ec4899"; APP_STATE.visSecondaryColor = "#8b5cf6"; }
+                else if (val === 'gold') { APP_STATE.visPrimaryColor = "#f59e0b"; APP_STATE.visSecondaryColor = "#ef4444"; }
+                else if (val === 'ice') { APP_STATE.visPrimaryColor = "#38bdf8"; APP_STATE.visSecondaryColor = "#6366f1"; }
+                document.getElementById('visPrimaryColor').value = APP_STATE.visPrimaryColor;
+                document.getElementById('visSecondaryColor').value = APP_STATE.visSecondaryColor;
+            });
+
+            document.getElementById('visSensitivity').addEventListener('input', (e) => {
+                APP_STATE.visSensitivity = parseFloat(e.target.value);
+                document.getElementById('visSensVal').textContent = `${APP_STATE.visSensitivity.toFixed(1)}x`;
+            });
+
+            document.getElementById('visPosY').addEventListener('input', (e) => {
+                APP_STATE.visPosY = parseInt(e.target.value);
+                document.getElementById('visPosYVal').textContent = `${APP_STATE.visPosY}%`;
+            });
+
+            document.getElementById('visSize').addEventListener('input', (e) => {
+                APP_STATE.visSize = parseInt(e.target.value);
+                document.getElementById('visSizeVal').textContent = `${APP_STATE.visSize}%`;
+            });
+
+            document.getElementById('visLineWidth').addEventListener('input', (e) => {
+                APP_STATE.visLineWidth = parseInt(e.target.value);
+                document.getElementById('visLineWidthVal').textContent = `${APP_STATE.visLineWidth}px`;
+            });
+
+            DOM.bgFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                handleBgFileUpload(file);
+            });
+
+            DOM.btnRemoveBg.addEventListener('click', () => {
+                if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) {
+                    APP_STATE.bgElement.pause();
+                }
+                APP_STATE.bgType = 'none';
+                APP_STATE.bgElement = null;
+                DOM.bgInfoBar.classList.add('hidden');
+            });
+
+            DOM.btnSavePreset.addEventListener('click', saveProjectToLocalStorage);
+            DOM.btnNewProject.addEventListener('click', () => {
+                if (confirm("Reset seluruh pengaturan ke default?")) {
+                    localStorage.removeItem('AGE_YT4_PROJECT_PRESET');
+                    location.reload();
+                }
+            });
+        }
+
+        function initAspectRatios() {
+            document.querySelectorAll('.btn-aspect').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.btn-aspect').forEach(b => {
+                        b.className = "btn-aspect px-2.5 py-1 text-xs rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 transition";
+                    });
+                    btn.className = "btn-aspect px-2.5 py-1 text-xs rounded-md bg-brand-500/20 text-brand-500 font-semibold border border-brand-500/40 transition";
+                    
+                    APP_STATE.aspectRatio = btn.getAttribute('data-ratio');
+                    DOM.canvasContainer.className = `relative h-full max-h-[620px] max-w-full flex items-center justify-center border border-slate-800 rounded-xl overflow-hidden shadow-inner bg-[#080b10] ratio-${APP_STATE.aspectRatio.replace(':', '-')}`;
+                    updateCanvasDimensions();
+                });
+            });
+
+            updateCanvasDimensions();
+        }
+
+        function updateCanvasDimensions() {
+            const baseRes = APP_STATE.resMultiplier;
+            if (APP_STATE.aspectRatio === '9:16') {
+                DOM.canvas.width = baseRes;
+                DOM.canvas.height = Math.round(baseRes * (16 / 9));
+            } else if (APP_STATE.aspectRatio === '1:1') {
+                DOM.canvas.width = baseRes;
+                DOM.canvas.height = baseRes;
+            } else if (APP_STATE.aspectRatio === '16:9') {
+                DOM.canvas.width = Math.round(baseRes * (16 / 9));
+                DOM.canvas.height = baseRes;
+            }
+            DOM.canvasResBadge.textContent = `${DOM.canvas.width} x ${DOM.canvas.height}`;
+        }
+
+        function initBackgroundSystem() {
+            document.querySelectorAll('.btn-bg-preset').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const preset = btn.getAttribute('data-bgpreset');
+                    APP_STATE.bgType = 'preset';
+                    APP_STATE.bgPresetName = preset;
+                    APP_STATE.bgElement = null;
+
+                    DOM.bgFileNameText.textContent = `Preset: ${preset.toUpperCase()}`;
+                    DOM.bgTypeIcon.className = "fa-solid fa-palette text-brand-500";
+                    DOM.bgInfoBar.classList.remove('hidden');
+                });
+            });
+
+            const bgFit = document.getElementById('bgFitMode');
+            if (bgFit) bgFit.addEventListener('change', (e) => APP_STATE.bgFitMode = e.target.value);
+
+            const bgCol = document.getElementById('bgColorPicker');
+            if (bgCol) bgCol.addEventListener('input', (e) => APP_STATE.bgColor = e.target.value);
+
+            const bgOp = document.getElementById('bgOpacity');
+            if (bgOp) bgOp.addEventListener('input', (e) => {
+                APP_STATE.bgOpacity = parseInt(e.target.value) / 100;
+                document.getElementById('bgOpacityVal').textContent = `${e.target.value}%`;
+            });
+
+            const bgDim = document.getElementById('bgDim');
+            if (bgDim) bgDim.addEventListener('input', (e) => {
+                APP_STATE.bgDim = parseInt(e.target.value) / 100;
+                document.getElementById('bgDimVal').textContent = `${e.target.value}%`;
+            });
+
+            const bgBlur = document.getElementById('bgBlur');
+            if (bgBlur) bgBlur.addEventListener('input', (e) => {
+                APP_STATE.bgBlur = parseInt(e.target.value);
+                document.getElementById('bgBlurVal').textContent = `${e.target.value}px`;
+            });
+        }
+
+        const AI_PRESET_PROMPTS = {
+            cyberpunk: "futuristic cyberpunk city street at night, neon pink and cyan lights, rain reflections, highly detailed, dark atmosphere, cinematic 8k",
+            sunset: "aesthetic sunset sky over quiet ocean horizon, warm golden hour orange and pink clouds, soft waves, moody cinematic lighting",
+            abstract: "abstract dark geometry 3d render, glowing purple and teal lines, fluid dark wave background, clean futuristic 8k",
+            nature: "misty mysterious pine forest in blue twilight, atmospheric fog, ethereal calm mood, dark moody nature photography",
+            retrowave: "1980s synthwave retrowave landscape, grid floor, wireframe mountains, magenta giant sun, retro neon aesthetic",
+            space: "deep space galaxy nebula, glowing purple stars, cosmic dust, photorealistic space background, cinematic dark fantasy"
+        };
+
+        function initAiBackgroundSystem() {
+            const btnGen = document.getElementById('btnGenerateAiBg');
+            const inputPrompt = document.getElementById('aiPromptInput');
+            const btnClear = document.getElementById('btnClearAiPrompt');
+
+            if (btnGen) {
+                btnGen.addEventListener('click', generateAiBackground);
+            }
+
+            if (btnClear && inputPrompt) {
+                btnClear.addEventListener('click', () => {
+                    inputPrompt.value = '';
+                });
+            }
+
+            document.querySelectorAll('.btn-ai-preset').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const presetKey = btn.getAttribute('data-aipreset');
+                    const fullPrompt = AI_PRESET_PROMPTS[presetKey] || '';
+                    if (inputPrompt) {
+                        inputPrompt.value = fullPrompt;
+                    }
+                });
+            });
+        }
+
+        function getAiTargetDimensions() {
+            if (APP_STATE.aspectRatio === '9:16') {
+                return { width: 720, height: 1280 };
+            } else if (APP_STATE.aspectRatio === '1:1') {
+                return { width: 1080, height: 1080 };
+            } else if (APP_STATE.aspectRatio === '16:9') {
+                return { width: 1280, height: 720 };
+            }
+            return { width: 720, height: 1280 };
+        }
+
+        async function generateAiBackground() {
+            const input = document.getElementById('aiPromptInput');
+            const promptText = (input.value || '').trim();
+            if (!promptText) {
+                alert("Harap masukkan deskripsi / prompt gambar terlebih dahulu!");
+                return;
+            }
+
+            const btn = document.getElementById('btnGenerateAiBg');
+            const icon = document.getElementById('aiGenIcon');
+            const label = document.getElementById('aiGenText');
+
+            btn.disabled = true;
+            icon.className = "fa-solid fa-spinner animate-spin";
+            label.textContent = "Membuat gambar AI...";
+
+            const { width, height } = getAiTargetDimensions();
+            const seed = Math.floor(Math.random() * 999999);
+            
+            const primaryUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+            const fallbackUrl = `https://picsum.photos/${width}/${height}?random=${seed}`;
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+            try {
+                let response = await fetch(primaryUrl, { signal: controller.signal });
+                
+                if (!response.ok) {
+                    response = await fetch(fallbackUrl, { signal: controller.signal });
+                }
+
+                clearTimeout(timeoutId);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const blob = await response.blob();
+                if (!blob.type.startsWith('image/')) {
+                    throw new Error("Format yang diterima bukan gambar valid.");
+                }
+
+                const objectUrl = URL.createObjectURL(blob);
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = objectUrl;
+
+                img.onload = () => {
+                    APP_STATE.bgType = 'image';
+                    APP_STATE.bgElement = img;
+
+                    DOM.bgFileNameText.textContent = `AI: ${promptText.substring(0, 18)}...`;
+                    DOM.bgTypeIcon.className = "fa-solid fa-wand-magic-sparkles text-indigo-400";
+                    DOM.bgInfoBar.classList.remove('hidden');
+
+                    addAiHistoryItem(objectUrl, promptText);
+
+                    btn.disabled = false;
+                    icon.className = "fa-solid fa-wand-magic-sparkles";
+                    label.textContent = "Generate Background AI";
+                };
+
+                img.onerror = () => {
+                    throw new Error("Gagal memuat gambar hasil AI ke dalam canvas.");
+                };
+
+            } catch (err) {
+                clearTimeout(timeoutId);
+                console.error("AI Generation Error:", err);
+                btn.disabled = false;
+                icon.className = "fa-solid fa-wand-magic-sparkles";
+                label.textContent = "Generate Background AI";
+                alert("Gagal membuat gambar AI, silakan coba lagi.");
+            }
+        }
+
+        function addAiHistoryItem(objectUrl, promptText) {
+            if (!APP_STATE.aiBgHistory) APP_STATE.aiBgHistory = [];
+            APP_STATE.aiBgHistory.unshift({ url: objectUrl, prompt: promptText });
+            if (APP_STATE.aiBgHistory.length > 6) {
+                APP_STATE.aiBgHistory.pop();
+            }
+            renderAiHistoryUI();
+        }
+
+        function renderAiHistoryUI() {
+            const wrapper = document.getElementById('aiHistoryWrapper');
+            const grid = document.getElementById('aiHistoryGrid');
+            if (!wrapper || !grid) return;
+
+            if (!APP_STATE.aiBgHistory || APP_STATE.aiBgHistory.length === 0) {
+                wrapper.classList.add('hidden');
+                return;
+            }
+
+            wrapper.classList.remove('hidden');
+            grid.innerHTML = '';
+
+            APP_STATE.aiBgHistory.forEach((item) => {
+                const thumb = document.createElement('div');
+                thumb.className = "relative aspect-square rounded-lg border border-slate-700 overflow-hidden cursor-pointer group hover:border-indigo-400 transition shadow";
+                thumb.innerHTML = `
+                    <img src="${item.url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                        <i class="fa-solid fa-check text-white text-xs"></i>
+                    </div>
+                `;
+                thumb.title = `Gunakan kembali: "${item.prompt}"`;
+                thumb.onclick = () => {
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    img.src = item.url;
+                    img.onload = () => {
+                        APP_STATE.bgType = 'image';
+                        APP_STATE.bgElement = img;
+                        DOM.bgFileNameText.textContent = `AI: ${item.prompt.substring(0, 18)}...`;
+                        DOM.bgTypeIcon.className = "fa-solid fa-wand-magic-sparkles text-indigo-400";
+                        DOM.bgInfoBar.classList.remove('hidden');
+                    };
+                };
+                grid.appendChild(thumb);
+            });
+        }
+
+        function initBackgroundFxSystem() {
+            document.querySelectorAll('.btn-bg-motion-fx').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.btn-bg-motion-fx').forEach(b => {
+                        b.className = "btn-bg-motion-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]";
+                    });
+                    btn.className = "btn-bg-motion-fx p-1.5 rounded-lg border border-brand-500 bg-brand-500/10 text-slate-200 font-semibold transition text-center text-[11px]";
+                    APP_STATE.bgMotionFx = btn.getAttribute('data-bgmotion');
+                });
+            });
+
+            document.querySelectorAll('.btn-bg-filter-fx').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.btn-bg-filter-fx').forEach(b => {
+                        b.className = "btn-bg-filter-fx p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition text-center text-[11px]";
+                    });
+                    btn.className = "btn-bg-filter-fx p-1.5 rounded-lg border border-brand-500 bg-brand-500/10 text-slate-200 font-semibold transition text-center text-[11px]";
+                    APP_STATE.bgFilterFx = btn.getAttribute('data-bgfilter');
+                });
+            });
+
+            const bgFxSens = document.getElementById('bgFxSens');
+            if (bgFxSens) bgFxSens.addEventListener('input', (e) => {
+                APP_STATE.bgFxSens = parseFloat(e.target.value);
+                document.getElementById('bgFxSensVal').textContent = `${APP_STATE.bgFxSens.toFixed(1)}x`;
+            });
+
+            const bgFxColorInt = document.getElementById('bgFxColorIntensity');
+            if (bgFxColorInt) bgFxColorInt.addEventListener('input', (e) => {
+                APP_STATE.bgFxColorIntensity = parseInt(e.target.value) / 100;
+                document.getElementById('bgFxColorIntensityVal').textContent = `${e.target.value}%`;
+            });
+        }
+
+        function initOverlaySystem() {
+            DOM.overlayFileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                if (!files.length) return;
+                files.forEach(file => addOverlayFromFile(file));
+            });
+
+            document.getElementById('overlayNameInput').addEventListener('input', (e) => {
+                const item = getSelectedOverlayItem();
+                if (item) { item.name = e.target.value; renderOverlayList(); }
+            });
+
+            document.querySelectorAll('.btn-overlay-fx').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const fx = btn.getAttribute('data-overlayfx');
+                    const item = getSelectedOverlayItem();
+                    if (item) {
+                        item.fx = fx;
+                        updateOverlayFxButtonsUI(fx);
+                    }
+                });
+            });
+
+            document.getElementById('overlayAnimSelect').addEventListener('change', (e) => {
+                const item = getSelectedOverlayItem();
+                if (item) { item.anim = e.target.value; }
+            });
+
+            document.getElementById('overlayScale').addEventListener('input', (e) => {
+                const item = getSelectedOverlayItem();
+                if (item) {
+                    item.scale = parseInt(e.target.value);
+                    document.getElementById('overlayScaleVal').textContent = `${item.scale}%`;
+                    renderInteractiveTextNodes();
+                }
+            });
+
+            document.getElementById('overlayOpacity').addEventListener('input', (e) => {
+                const item = getSelectedOverlayItem();
+                if (item) {
+                    item.opacity = parseInt(e.target.value) / 100;
+                    document.getElementById('overlayOpacityVal').textContent = `${e.target.value}%`;
+                }
+            });
+
+            document.getElementById('overlayLayerOrder').addEventListener('change', (e) => {
+                const item = getSelectedOverlayItem();
+                if (item) { item.layerOrder = e.target.value; }
+            });
+
+            document.getElementById('overlayBlendMode').addEventListener('change', (e) => {
+                const item = getSelectedOverlayItem();
+                if (item) { item.blendMode = e.target.value; }
+            });
+
+            document.getElementById('overlayChromaBlack').addEventListener('change', (e) => {
+                const item = getSelectedOverlayItem();
+                if (item) { item.chromaBlack = e.target.checked; item.needsUpdate = true; }
+            });
+
+            document.getElementById('overlayLockPosition').addEventListener('change', (e) => {
+                const item = getSelectedOverlayItem();
+                if (item) { item.isLocked = e.target.checked; renderInteractiveTextNodes(); }
+            });
+
+            document.getElementById('btnDeleteSelectedOverlay').addEventListener('click', () => {
+                if (!APP_STATE.selectedOverlayId) return;
+                APP_STATE.overlays = APP_STATE.overlays.filter(o => o.id !== APP_STATE.selectedOverlayId);
+                APP_STATE.selectedOverlayId = APP_STATE.overlays.length ? APP_STATE.overlays[0].id : null;
+                renderOverlayList();
+                populateSelectedOverlayEditor();
+                renderInteractiveTextNodes();
+            });
+        }
+
+        function getSelectedOverlayItem() {
+            return APP_STATE.overlays.find(o => o.id === APP_STATE.selectedOverlayId);
+        }
+
+        function renderOverlayList() {
+            const container = DOM.overlayListContainer;
+            container.innerHTML = '';
+
+            if (APP_STATE.overlays.length === 0) {
+                container.innerHTML = `
+                    <div class="p-3 text-center border border-dashed border-slate-800 rounded-xl text-slate-500 text-xs">
+                        Belum ada overlay. Klik "+ Overlay" untuk menambah logo / watermark.
+                    </div>`;
+                return;
+            }
+
+            APP_STATE.overlays.forEach((item, idx) => {
+                const isSelected = item.id === APP_STATE.selectedOverlayId;
+                const div = document.createElement('div');
+                div.className = `p-2 rounded-lg border text-xs flex items-center justify-between cursor-pointer transition ${isSelected ? 'border-brand-500 bg-brand-500/10 text-slate-100' : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'}`;
+                div.innerHTML = `
+                    <div class="flex items-center space-x-2 truncate">
+                        <span class="w-4 h-4 rounded-full bg-slate-800 text-[10px] flex items-center justify-center font-bold">${idx + 1}</span>
+                        <span class="truncate font-medium">${item.name || 'Overlay ' + (idx + 1)}</span>
+                    </div>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${item.layerOrder === 'above' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-indigo-500/20 text-indigo-400'}">${item.layerOrder === 'above' ? 'Depan' : 'Belakang'}</span>
+                `;
+                div.onclick = () => {
+                    APP_STATE.selectedOverlayId = item.id;
+                    renderOverlayList();
+                    populateSelectedOverlayEditor();
+                    renderInteractiveTextNodes();
+                };
+                container.appendChild(div);
+            });
+        }
+
+        function populateSelectedOverlayEditor() {
+            const editor = DOM.selectedOverlayEditor;
+            const item = getSelectedOverlayItem();
+            if (!item) {
+                editor.classList.add('hidden');
+                return;
+            }
+
+            editor.classList.remove('hidden');
+            document.getElementById('overlayNameInput').value = item.name || '';
+            document.getElementById('overlayScale').value = item.scale || 50;
+            document.getElementById('overlayScaleVal').textContent = `${item.scale || 50}%`;
+            document.getElementById('overlayOpacity').value = (item.opacity !== undefined ? item.opacity : 1.0) * 100;
+            document.getElementById('overlayOpacityVal').textContent = `${Math.round((item.opacity !== undefined ? item.opacity : 1.0) * 100)}%`;
+            document.getElementById('overlayLayerOrder').value = item.layerOrder || 'above';
+            document.getElementById('overlayBlendMode').value = item.blendMode || 'source-over';
+            document.getElementById('overlayChromaBlack').checked = !!item.chromaBlack;
+            document.getElementById('overlayLockPosition').checked = !!item.isLocked;
+            document.getElementById('overlayAnimSelect').value = item.anim || 'none';
+            updateOverlayFxButtonsUI(item.fx || 'none');
+        }
+
+        function initTextOverlaySystem() {
+            document.getElementById('btnAddText').addEventListener('click', () => {
+                const newId = Date.now();
+                APP_STATE.textOverlays.push({
+                    id: newId,
+                    text: "Teks Baru " + (APP_STATE.textOverlays.length + 1),
+                    font: "Inter",
+                    size: 32,
+                    color: "#ffffff",
+                    fx: "neon",
+                    anim: "none",
+                    rotation: 0,
+                    stroke: false,
+                    strokeColor: "#000000",
+                    bgBox: false,
+                    bgBoxColor: "#000000",
+                    x: 50,
+                    y: 50
+                });
+                APP_STATE.selectedTextId = newId;
+                renderTextOverlaysList();
+                renderInteractiveTextNodes();
+                populateSelectedTextEditor();
+            });
+
+            document.getElementById('btnDuplicateText').addEventListener('click', () => {
+                const current = getSelectedTextItem();
+                if (!current) return;
+
+                const newId = Date.now();
+                const copy = JSON.parse(JSON.stringify(current));
+                copy.id = newId;
+                copy.x = Math.min(90, copy.x + 5);
+                copy.y = Math.min(90, copy.y + 5);
+                copy.text += " (Copy)";
+
+                APP_STATE.textOverlays.push(copy);
+                APP_STATE.selectedTextId = newId;
+                renderTextOverlaysList();
+                renderInteractiveTextNodes();
+                populateSelectedTextEditor();
+            });
+
+            document.querySelectorAll('.btn-text-fx').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const fx = btn.getAttribute('data-textfx');
+                    const item = getSelectedTextItem();
+                    if (item) {
+                        item.fx = fx;
+                        updateTextFxGridUI(fx);
+                    }
+                });
+            });
+
+            document.getElementById('textAnimSelect').addEventListener('change', (e) => {
+                const item = getSelectedTextItem();
+                if (item) { item.anim = e.target.value; }
+            });
+
+            document.getElementById('textInputContent').addEventListener('input', (e) => {
+                const item = getSelectedTextItem();
+                if (item) { item.text = e.target.value; renderInteractiveTextNodes(); renderTextOverlaysList(); }
+            });
+
+            document.getElementById('textFontFamily').addEventListener('change', (e) => {
+                const item = getSelectedTextItem();
+                if (item) { item.font = e.target.value; renderInteractiveTextNodes(); }
+            });
+
+            document.getElementById('textColorPicker').addEventListener('input', (e) => {
+                const item = getSelectedTextItem();
+                if (item) { item.color = e.target.value; renderInteractiveTextNodes(); }
+            });
+
+            document.getElementById('textSize').addEventListener('input', (e) => {
+                const item = getSelectedTextItem();
+                if (item) {
+                    item.size = parseInt(e.target.value);
+                    document.getElementById('textSizeVal').textContent = `${item.size}px`;
+                    renderInteractiveTextNodes();
+                }
+            });
+
+            const txtRot = document.getElementById('textRotation');
+            if (txtRot) txtRot.addEventListener('input', (e) => {
+                const item = getSelectedTextItem();
+                if (item) {
+                    item.rotation = parseInt(e.target.value);
+                    document.getElementById('textRotationVal').textContent = `${item.rotation}°`;
+                    renderInteractiveTextNodes();
+                }
+            });
+
+            const txtStroke = document.getElementById('textStrokeCheckbox');
+            if (txtStroke) txtStroke.addEventListener('change', (e) => {
+                const item = getSelectedTextItem();
+                if (item) { item.stroke = e.target.checked; renderInteractiveTextNodes(); }
+            });
+
+            const txtStrokeCol = document.getElementById('textStrokeColorPicker');
+            if (txtStrokeCol) txtStrokeCol.addEventListener('input', (e) => {
+                const item = getSelectedTextItem();
+                if (item) { item.strokeColor = e.target.value; renderInteractiveTextNodes(); }
+            });
+
+            const txtBgBox = document.getElementById('textBgBoxCheckbox');
+            if (txtBgBox) txtBgBox.addEventListener('change', (e) => {
+                const item = getSelectedTextItem();
+                if (item) { item.bgBox = e.target.checked; renderInteractiveTextNodes(); }
+            });
+
+            const txtBgBoxCol = document.getElementById('textBgBoxColorPicker');
+            if (txtBgBoxCol) txtBgBoxCol.addEventListener('input', (e) => {
+                const item = getSelectedTextItem();
+                if (item) { item.bgBoxColor = e.target.value; renderInteractiveTextNodes(); }
+            });
+
+            document.getElementById('btnDeleteSelectedText').addEventListener('click', () => {
+                if (APP_STATE.textOverlays.length <= 1) {
+                    alert("Minimal harus menyisakan 1 elemen teks.");
+                    return;
+                }
+                APP_STATE.textOverlays = APP_STATE.textOverlays.filter(t => t.id !== APP_STATE.selectedTextId);
+                APP_STATE.selectedTextId = APP_STATE.textOverlays[0].id;
+                renderTextOverlaysList();
+                renderInteractiveTextNodes();
+                populateSelectedTextEditor();
+            });
+
+            renderTextOverlaysList();
+            renderInteractiveTextNodes();
+            populateSelectedTextEditor();
+        }
+
+        function handleAudioFileUpload(file) {
+            if (!file) return;
+            const fileUrl = URL.createObjectURL(file);
+            DOM.audioElement.src = fileUrl;
+            DOM.audioElement.load();
+
+            APP_STATE.isAudioLoaded = true;
+            DOM.btnPlayPause.disabled = false;
+            DOM.audioScrubber.disabled = false;
+            DOM.audioFileName.textContent = file.name;
+            DOM.audioFormatBadge.textContent = `Siap ( ${(file.size / (1024 * 1024)).toFixed(1)} MB )`;
+
+            DOM.metaFileName.textContent = file.name;
+            DOM.audioMetaBox.classList.remove('hidden');
+            DOM.emptyPlaceholder.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function handleBgFileUpload(file) {
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            if (file.type.startsWith('image/')) {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => {
+                    APP_STATE.bgType = 'image';
+                    APP_STATE.bgElement = img;
+                    DOM.bgFileNameText.textContent = file.name;
+                    DOM.bgTypeIcon.className = "fa-solid fa-image text-brand-500";
+                    DOM.bgInfoBar.classList.remove('hidden');
+                };
+            } else if (file.type.startsWith('video/')) {
+                const video = document.createElement('video');
+                video.src = url;
+                video.loop = true;
+                video.muted = true;
+                video.playsInline = true;
+                video.onloadedmetadata = () => {
+                    APP_STATE.bgType = 'video';
+                    APP_STATE.bgElement = video;
+                    if (APP_STATE.isPlaying) video.play();
+                    DOM.bgFileNameText.textContent = file.name;
+                    DOM.bgTypeIcon.className = "fa-solid fa-film text-brand-accent";
+                    DOM.bgInfoBar.classList.remove('hidden');
+                };
+            }
+        }
+
+        function addOverlayFromFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const img = new Image();
+                img.onload = () => {
+                    const newOverlay = {
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        img: img,
+                        x: 50,
+                        y: 50,
+                        scale: 50,
+                        opacity: 1.0,
+                        layerOrder: 'above',
+                        isLocked: false,
+                        blendMode: 'source-over',
+                        chromaBlack: false,
+                        fx: 'none',
+                        anim: 'none',
+                        cachedCanvas: null,
+                        needsUpdate: true
+                    };
+                    APP_STATE.overlays.push(newOverlay);
+                    APP_STATE.selectedOverlayId = newOverlay.id;
+                    renderOverlayList();
+                    populateSelectedOverlayEditor();
+                    renderInteractiveTextNodes();
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function initDragAndDropSystem() {
+            const area = DOM.dropzoneArea || document.getElementById('dropzoneArea');
+            const overlay = DOM.dropzoneOverlay || document.getElementById('dropzoneOverlay');
+            if (!area) return;
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                area.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (overlay) overlay.classList.remove('opacity-0');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (overlay) overlay.classList.add('opacity-0');
+                }, false);
+            });
+
+            area.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (!files || !files.length) return;
+
+                Array.from(files).forEach(file => {
+                    if (file.type.startsWith('audio/')) {
+                        handleAudioFileUpload(file);
+                    } else if (file.type.startsWith('image/')) {
+                        if (APP_STATE.bgType !== 'none') {
+                            addOverlayFromFile(file);
+                        } else {
+                            handleBgFileUpload(file);
+                        }
+                    } else if (file.type.startsWith('video/')) {
+                        handleBgFileUpload(file);
+                    }
+                });
+            }, false);
+        }
+
+        function getSelectedTextItem() {
+            return APP_STATE.textOverlays.find(t => t.id === APP_STATE.selectedTextId);
+        }
+
+        function renderTextOverlaysList() {
+            const container = document.getElementById('textListContainer');
+            container.innerHTML = '';
+
+            APP_STATE.textOverlays.forEach((item, idx) => {
+                const isSelected = item.id === APP_STATE.selectedTextId;
+                const div = document.createElement('div');
+                div.className = `p-2 rounded-lg border text-xs flex items-center justify-between cursor-pointer transition ${isSelected ? 'border-brand-500 bg-brand-500/10 text-slate-100' : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'}`;
+                div.innerHTML = `
+                    <div class="flex items-center space-x-2 truncate">
+                        <span class="w-4 h-4 rounded-full bg-slate-800 text-[10px] flex items-center justify-center font-bold">${idx + 1}</span>
+                        <span class="truncate font-medium">${item.text}</span>
+                    </div>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-slate-800 text-brand-400 font-semibold">${item.fx || 'soft'}</span>
+                `;
+                div.onclick = () => {
+                    APP_STATE.selectedTextId = item.id;
+                    renderTextOverlaysList();
+                    renderInteractiveTextNodes();
+                    populateSelectedTextEditor();
+                };
+                container.appendChild(div);
+            });
+        }
+
+        function renderInteractiveTextNodes() {
+            const container = DOM.textContainer;
+            container.innerHTML = '';
+
+            APP_STATE.overlays.forEach(item => {
+                const isSelected = item.id === APP_STATE.selectedOverlayId;
+                const node = document.createElement('div');
+                node.className = `absolute border-2 rounded-lg transition pointer-events-auto cursor-move select-none ${isSelected ? 'border-brand-500 bg-brand-500/10' : 'border-dashed border-slate-600/50 hover:border-slate-400'}`;
+                node.style.left = `${item.x}%`;
+                node.style.top = `${item.y}%`;
+                const displayScale = ((item.scale || 50) / 100) * 60;
+                node.style.width = `${Math.max(30, displayScale * 2)}px`;
+                node.style.height = `${Math.max(30, displayScale * 2)}px`;
+                node.style.transform = `translate(-50%, -50%)`;
+
+                if (isSelected) {
+                    const tag = document.createElement('span');
+                    tag.className = 'absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-500 text-slate-950 font-bold px-1.5 py-0.2 rounded text-[9px] whitespace-nowrap shadow';
+                    tag.textContent = item.name || 'Overlay';
+                    node.appendChild(tag);
+                }
+
+                if (!item.isLocked) {
+                    let isDragging = false;
+                    const onStart = () => {
+                        isDragging = true;
+                        APP_STATE.selectedOverlayId = item.id;
+                        renderOverlayList();
+                        populateSelectedOverlayEditor();
+                        renderInteractiveTextNodes();
+                    };
+
+                    const onMove = (clientX, clientY) => {
+                        if (!isDragging) return;
+                        const rect = container.getBoundingClientRect();
+                        const rx = ((clientX - rect.left) / rect.width) * 100;
+                        const ry = ((clientY - rect.top) / rect.height) * 100;
+
+                        item.x = Math.max(2, Math.min(98, rx));
+                        item.y = Math.max(2, Math.min(98, ry));
+
+                        node.style.left = `${item.x}%`;
+                        node.style.top = `${item.y}%`;
+                    };
+
+                    node.addEventListener('mousedown', (e) => { e.stopPropagation(); onStart(); });
+                    window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+                    window.addEventListener('mouseup', () => isDragging = false);
+
+                    node.addEventListener('touchstart', (e) => {
+                        e.stopPropagation();
+                        if (e.touches.length > 0) onStart();
+                    }, { passive: true });
+
+                    window.addEventListener('touchmove', (e) => {
+                        if (e.touches.length > 0) onMove(e.touches[0].clientX, e.touches[0].clientY);
+                    }, { passive: true });
+
+                    window.addEventListener('touchend', () => isDragging = false);
+                }
+
+                container.appendChild(node);
+            });
+
+            APP_STATE.textOverlays.forEach(item => {
+                const isSelected = item.id === APP_STATE.selectedTextId;
+                const node = document.createElement('div');
+                
+                node.className = `text-overlay-node absolute pointer-events-auto cursor-move select-none transition ${isSelected ? 'border-2 border-dashed border-brand-500 bg-brand-500/10 rounded-lg shadow-lg' : 'border-2 border-dashed border-transparent hover:border-slate-500/40 rounded-lg'}`;
+                node.style.left = `${item.x}%`;
+                node.style.top = `${item.y}%`;
+                
+                const approxWidth = Math.max(70, (item.text.length * (item.size * 0.55)));
+                const approxHeight = Math.max(32, item.size * 1.25);
+                
+                node.style.width = `${approxWidth}px`;
+                node.style.height = `${approxHeight}px`;
+                node.style.transform = `translate(-50%, -50%) rotate(${item.rotation || 0}deg)`;
+
+                if (isSelected) {
+                    const tag = document.createElement('span');
+                    tag.className = 'absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-500 text-slate-950 font-bold px-1.5 py-0.2 rounded text-[9px] whitespace-nowrap shadow pointer-events-none';
+                    tag.textContent = 'Edit Teks';
+                    node.appendChild(tag);
+                }
+
+                let isDragging = false;
+                const onStart = () => {
+                    isDragging = true;
+                    APP_STATE.selectedTextId = item.id;
+                    renderTextOverlaysList();
+                    populateSelectedTextEditor();
+                    renderInteractiveTextNodes();
+                };
+
+                const onMove = (clientX, clientY) => {
+                    if (!isDragging) return;
+                    const rect = container.getBoundingClientRect();
+                    const rx = ((clientX - rect.left) / rect.width) * 100;
+                    const ry = ((clientY - rect.top) / rect.height) * 100;
+
+                    item.x = Math.max(5, Math.min(95, rx));
+                    item.y = Math.max(5, Math.min(95, ry));
+
+                    node.style.left = `${item.x}%`;
+                    node.style.top = `${item.y}%`;
+                };
+
+                node.addEventListener('mousedown', (e) => { e.stopPropagation(); onStart(); });
+                window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+                window.addEventListener('mouseup', () => isDragging = false);
+
+                node.addEventListener('touchstart', (e) => {
+                    e.stopPropagation();
+                    if (e.touches.length > 0) onStart();
+                }, { passive: true });
+
+                window.addEventListener('touchmove', (e) => {
+                    if (e.touches.length > 0) onMove(e.touches[0].clientX, e.touches[0].clientY);
+                }, { passive: true });
+
+                window.addEventListener('touchend', () => isDragging = false);
+
+                container.appendChild(node);
+            });
+        }
+
+        function populateSelectedTextEditor() {
+            const item = getSelectedTextItem();
+            if (!item) return;
+
+            document.getElementById('textInputContent').value = item.text;
+            document.getElementById('textFontFamily').value = item.font;
+            document.getElementById('textColorPicker').value = item.color;
+            document.getElementById('textSize').value = item.size;
+            document.getElementById('textSizeVal').textContent = `${item.size}px`;
+            
+            const txtRot = document.getElementById('textRotation');
+            if (txtRot) {
+                txtRot.value = item.rotation || 0;
+                document.getElementById('textRotationVal').textContent = `${item.rotation || 0}°`;
+            }
+            const txtStroke = document.getElementById('textStrokeCheckbox');
+            if (txtStroke) txtStroke.checked = !!item.stroke;
+            const txtStrokeCol = document.getElementById('textStrokeColorPicker');
+            if (txtStrokeCol) txtStrokeCol.value = item.strokeColor || "#000000";
+            const txtBgBox = document.getElementById('textBgBoxCheckbox');
+            if (txtBgBox) txtBgBox.checked = !!item.bgBox;
+            const txtBgBoxCol = document.getElementById('textBgBoxColorPicker');
+            if (txtBgBoxCol) txtBgBoxCol.value = item.bgBoxColor || "#000000";
+
+            document.getElementById('textAnimSelect').value = item.anim || 'none';
+            updateTextFxGridUI(item.fx || 'soft');
+        }
+
+        function initRecordingEngine() {
+            const supportBadge = document.getElementById('mediaRecorderSupportBadge');
+
+            if (!window.MediaRecorder) {
+                if (supportBadge) {
+                    supportBadge.textContent = "Tidak Mendukung MediaRecorder";
+                    supportBadge.className = "px-2 py-0.5 rounded text-[11px] font-semibold bg-red-500/20 text-red-400";
+                }
+                DOM.btnStartRecording.disabled = true;
+                return;
+            }
+
+            document.querySelectorAll('input[name="exportFormat"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    APP_STATE.exportFormat = e.target.value;
+                    updateExportFormatNoticeUI();
+                });
+            });
+
+            document.querySelectorAll('input[name="recRes"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    APP_STATE.resMultiplier = parseInt(e.target.value);
+                    updateCanvasDimensions();
+                    const r720 = document.getElementById('lblRes720');
+                    const r1080 = document.getElementById('lblRes1080');
+                    if (r720) r720.className = APP_STATE.resMultiplier === 720 ? "border border-brand-500 bg-brand-500/10 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-200 transition" : "border border-slate-800 bg-slate-900 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-300 transition";
+                    if (r1080) r1080.className = APP_STATE.resMultiplier === 1080 ? "border border-brand-500 bg-brand-500/10 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-200 transition" : "border border-slate-800 bg-slate-900 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-300 transition";
+                });
+            });
+
+            DOM.btnStartRecording.addEventListener('click', () => {
+                if (!APP_STATE.isAudioLoaded) {
+                    alert("Harap upload file audio terlebih dahulu sebelum merekam video!");
+                    return;
+                }
+                startRecordingProcess();
+            });
+
+            document.getElementById('btnOpenExportModal').addEventListener('click', () => {
+                document.querySelector('[data-tab="tab-export"]').click();
+            });
+
+            const closeModalHandler = () => DOM.videoExportModal.classList.add('hidden');
+            document.getElementById('btnCloseModal').addEventListener('click', closeModalHandler);
+            document.getElementById('btnCloseModal2').addEventListener('click', closeModalHandler);
+
+            DOM.btnDownloadVideo.addEventListener('click', () => {
+                if (!APP_STATE.recordedBlobUrl) return;
+                const name = document.getElementById('exportFileName').value || "AGE_YT4_Musik_Video";
+                const ext = APP_STATE.actualExportExt || 'webm';
+                const a = document.createElement('a');
+                a.href = APP_STATE.recordedBlobUrl;
+                a.download = `${name}.${ext}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+
+            updateExportFormatNoticeUI();
+        }
+
+        function updateExportFormatNoticeUI() {
+            const lblWebM = document.getElementById('lblFormatWebM');
+            const lblMP4 = document.getElementById('lblFormatMP4');
+            const noticeText = document.getElementById('formatNoticeText');
+            const codecBadge = document.getElementById('outputCodecBadge');
+
+            if (APP_STATE.exportFormat === 'webm') {
+                if (lblWebM) lblWebM.className = "border border-brand-500 bg-brand-500/10 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-200 transition";
+                if (lblMP4) lblMP4.className = "border border-slate-800 bg-slate-900 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-300 transition";
+                if (noticeText) noticeText.textContent = "WebM = Ukuran file lebih kecil & diproses cepat secara native di browser.";
+                if (codecBadge) codecBadge.textContent = "video/webm;codecs=vp9,opus";
+            } else {
+                if (lblMP4) lblMP4.className = "border border-brand-500 bg-brand-500/10 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-200 transition";
+                if (lblWebM) lblWebM.className = "border border-slate-800 bg-slate-900 p-2.5 rounded-xl cursor-pointer flex flex-col justify-between h-18 text-slate-300 transition";
+                if (noticeText) noticeText.textContent = "MP4 = Lebih kompatibel untuk upload langsung ke Instagram, TikTok, Reels & WhatsApp.";
+                
+                const testMp4 = MediaRecorder.isTypeSupported('video/mp4;codecs=h264,aac') || MediaRecorder.isTypeSupported('video/mp4');
+                if (codecBadge) {
+                    if (testMp4) {
+                        codecBadge.textContent = "video/mp4;codecs=h264,aac";
+                    } else {
+                        codecBadge.textContent = "video/webm (MP4 Direct Fallback)";
+                    }
+                }
+            }
+        }
+
+        function startRecordingProcess() {
+            setupWebAudioNodes();
+
+            if (APP_STATE.audioContext.state === 'suspended') {
+                APP_STATE.audioContext.resume();
+            }
+
+            let mimeType = 'video/webm;codecs=vp9,opus';
+            let ext = 'webm';
+
+            if (APP_STATE.exportFormat === 'mp4') {
+                if (MediaRecorder.isTypeSupported('video/mp4;codecs=h264,aac')) {
+                    mimeType = 'video/mp4;codecs=h264,aac';
+                    ext = 'mp4';
+                } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+                    mimeType = 'video/mp4';
+                    ext = 'mp4';
+                } else {
+                    alert("Browser ini belum mendukung rekam langsung ke MP4 secara native. Video akan direkam sebagai WebM berkualitas tinggi.");
+                    if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+                    ext = 'webm';
+                }
+            } else {
+                if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+                ext = 'webm';
+            }
+
+            APP_STATE.actualExportExt = ext;
+            document.getElementById('exportExtBadge').textContent = `.${ext}`;
+
+            APP_STATE.recordedChunks = [];
+            // FIX: Explicit 30 FPS stream capturing to prevent stuttering
+            const canvasStream = DOM.canvas.captureStream(30);
+
+            const audioTrack = APP_STATE.mediaStreamDest.stream.getAudioTracks()[0];
+            const combinedStream = new MediaStream([
+                ...canvasStream.getVideoTracks(),
+                ...(audioTrack ? [audioTrack] : [])
+            ]);
+
+            try {
+                APP_STATE.mediaRecorder = new MediaRecorder(combinedStream, { 
+                    mimeType,
+                    videoBitsPerSecond: 4000000 // 4 Mbps bitrate for smooth encoding
+                });
+            } catch (err) {
+                console.error("MediaRecorder fallback:", err);
+                APP_STATE.mediaRecorder = new MediaRecorder(combinedStream);
+            }
+
+            APP_STATE.mediaRecorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) {
+                    APP_STATE.recordedChunks.push(e.data);
+                }
+            };
+
+            APP_STATE.mediaRecorder.onstop = () => {
+                const blob = new Blob(APP_STATE.recordedChunks, { type: mimeType });
+                if (APP_STATE.recordedBlobUrl) URL.revokeObjectURL(APP_STATE.recordedBlobUrl);
+                APP_STATE.recordedBlobUrl = URL.createObjectURL(blob);
+                DOM.recordedVideoPlayer.src = APP_STATE.recordedBlobUrl;
+                DOM.videoExportModal.classList.remove('hidden');
+
+                APP_STATE.isRecording = false;
+                DOM.recStatusBadge.classList.add('hidden');
+                clearInterval(APP_STATE.recTimerInterval);
+            };
+
+            DOM.audioElement.currentTime = 0;
+            DOM.audioElement.play().then(() => {
+                APP_STATE.isPlaying = true;
+                APP_STATE.isRecording = true;
+                // FIX: 1 second timeslice chunking for buffer health
+                APP_STATE.mediaRecorder.start(1000);
+
+                if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) {
+                    APP_STATE.bgElement.currentTime = 0;
+                    APP_STATE.bgElement.play();
+                }
+
+                DOM.playIcon.className = "fa-solid fa-pause text-sm";
+                DOM.recStatusBadge.classList.remove('hidden');
+                APP_STATE.recStartTime = Date.now();
+
+                APP_STATE.recTimerInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - APP_STATE.recStartTime) / 1000);
+                    DOM.recTimerText.textContent = `REC ${formatTime(elapsed)}`;
+                }, 500);
+            });
+        }
+
+        function stopRecordingProcess() {
+            if (APP_STATE.mediaRecorder && APP_STATE.mediaRecorder.state !== 'inactive') {
+                APP_STATE.mediaRecorder.stop();
+            }
+        }
+
+        function saveProjectToLocalStorage() {
+            const data = {
+                visStyle: APP_STATE.visStyle,
+                visPrimaryColor: APP_STATE.visPrimaryColor,
+                visSecondaryColor: APP_STATE.visSecondaryColor,
+                visSensitivity: APP_STATE.visSensitivity,
+                visPosY: APP_STATE.visPosY,
+                visSize: APP_STATE.visSize,
+                visLineWidth: APP_STATE.visLineWidth,
+                bgType: APP_STATE.bgType === 'preset' ? 'preset' : 'none',
+                bgPresetName: APP_STATE.bgPresetName,
+                bgColor: APP_STATE.bgColor,
+                bgOpacity: APP_STATE.bgOpacity,
+                bgDim: APP_STATE.bgDim,
+                bgMotionFx: APP_STATE.bgMotionFx,
+                bgFilterFx: APP_STATE.bgFilterFx,
+                bgFxSens: APP_STATE.bgFxSens,
+                bgFxColorIntensity: APP_STATE.bgFxColorIntensity,
+                textOverlays: APP_STATE.textOverlays,
+                aspectRatio: APP_STATE.aspectRatio,
+                exportFormat: APP_STATE.exportFormat
+            };
+            localStorage.setItem('AGE_YT4_PROJECT_PRESET', JSON.stringify(data));
+            alert("Preset Project Studio Berhasil Disimpan!");
+        }
+
+        function loadProjectFromLocalStorage() {
+            const saved = localStorage.getItem('AGE_YT4_PROJECT_PRESET');
+            if (!saved) return;
+
+            try {
+                const data = JSON.parse(saved);
+                if (data.visStyle) APP_STATE.visStyle = data.visStyle;
+                if (data.visPrimaryColor) APP_STATE.visPrimaryColor = data.visPrimaryColor;
+                if (data.visSecondaryColor) APP_STATE.visSecondaryColor = data.visSecondaryColor;
+                if (data.visSensitivity) APP_STATE.visSensitivity = data.visSensitivity;
+                if (data.visPosY) APP_STATE.visPosY = data.visPosY;
+                if (data.visSize) APP_STATE.visSize = data.visSize;
+                if (data.visLineWidth) APP_STATE.visLineWidth = data.visLineWidth;
+                if (data.bgMotionFx) APP_STATE.bgMotionFx = data.bgMotionFx;
+                if (data.bgFilterFx) APP_STATE.bgFilterFx = data.bgFilterFx;
+                if (data.bgFxSens) APP_STATE.bgFxSens = data.bgFxSens;
+                if (data.bgFxColorIntensity) APP_STATE.bgFxColorIntensity = data.bgFxColorIntensity;
+                if (data.exportFormat) APP_STATE.exportFormat = data.exportFormat;
+                if (data.textOverlays && Array.isArray(data.textOverlays)) APP_STATE.textOverlays = data.textOverlays;
+
+                renderTextOverlaysList();
+                renderInteractiveTextNodes();
+                populateSelectedTextEditor();
+            } catch (err) {
+                console.error("Failed loading preset:", err);
+            }
+        }
+
+        function renderCanvasLoop() {
+            const now = performance.now();
+            const delta = now - (APP_STATE.lastFrameTime || now);
+            APP_STATE.lastFrameTime = now;
+            if (delta > 0) {
+                const currentFps = 1000 / delta;
+                APP_STATE.fps = Math.round(APP_STATE.fps * 0.85 + currentFps * 0.15);
+            }
+
+            const ctx = DOM.ctx;
+            const w = DOM.canvas.width;
+            const h = DOM.canvas.height;
+
+            ctx.fillStyle = APP_STATE.bgColor;
+            ctx.fillRect(0, 0, w, h);
+
+            // Re-use pre-allocated Array to prevent Garbage Collection pauses
+            let freqData = APP_STATE.freqData;
+            let bassEnergy = 0;
+            if (APP_STATE.analyserNode && APP_STATE.isPlaying) {
+                APP_STATE.analyserNode.getByteFrequencyData(freqData);
+                let bassSum = 0;
+                for (let i = 0; i < 6; i++) bassSum += freqData[i] || 0;
+                bassEnergy = bassSum / 6 / 255;
+            } else {
+                for (let i = 0; i < 256; i++) {
+                    freqData[i] = Math.sin(Date.now() * 0.003 + i * 0.1) * 15 + 20;
+                }
+                bassEnergy = Math.sin(Date.now() * 0.002) * 0.2 + 0.2;
+            }
+
+            drawBackgroundWithFX(ctx, w, h, bassEnergy);
+            drawOverlaysOnCanvas(ctx, w, h, 'below', freqData, bassEnergy);
+            drawVisualizerStyle(ctx, w, h, freqData);
+            drawOverlaysOnCanvas(ctx, w, h, 'above', freqData, bassEnergy);
+            drawTextOverlaysOnCanvas(ctx, w, h, freqData, bassEnergy);
+
+            // FPS Counter - ONLY shown during preview mode (not included in video recording)
+            if (!APP_STATE.isRecording) {
+                ctx.save();
+                ctx.font = '600 11px monospace';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+                ctx.fillRect(w - 75, 8, 67, 22);
+                ctx.fillStyle = APP_STATE.fps >= 25 ? '#10b981' : (APP_STATE.fps >= 15 ? '#f59e0b' : '#ef4444');
+                ctx.textAlign = 'right';
+                ctx.fillText(`${APP_STATE.fps} FPS`, w - 15, 23);
+                ctx.restore();
+            }
+
+            requestAnimationFrame(renderCanvasLoop);
+        }
+
+        function drawBackgroundWithFX(ctx, w, h, bassEnergy) {
+            ctx.save();
+
+            let zoomScale = 1.0;
+            let transX = 0;
+            let transY = 0;
+            let alphaMultiplier = 1.0;
+            const time = Date.now() * 0.001;
+
+            if (APP_STATE.bgMotionFx === 'pan') {
+                zoomScale = 1.05 + Math.sin(time * 0.5) * 0.05 * APP_STATE.bgFxSens;
+                transX = Math.sin(time * 0.3) * 20 * APP_STATE.bgFxSens;
+                transY = Math.cos(time * 0.4) * 15 * APP_STATE.bgFxSens;
+            } else if (APP_STATE.bgMotionFx === 'denyut') {
+                zoomScale = 1.0 + (bassEnergy * 0.2 * APP_STATE.bgFxSens);
+            } else if (APP_STATE.bgMotionFx === 'blitz') {
+                if (bassEnergy > 0.4) {
+                    alphaMultiplier = Math.sin(time * 25) > 0 ? 1.0 : 0.2;
+                }
+            }
+
+            ctx.translate(w / 2 + transX, h / 2 + transY);
+            ctx.scale(zoomScale, zoomScale);
+            ctx.translate(-w / 2, -h / 2);
+
+            let filterString = '';
+            const intensity = APP_STATE.bgFxColorIntensity;
+
+            if (APP_STATE.bgFilterFx === 'mono') {
+                filterString += ` grayscale(${100 * intensity}%)`;
+            } else if (APP_STATE.bgFilterFx === 'contrast') {
+                filterString += ` contrast(${100 + 80 * intensity}%) saturate(${100 + 50 * intensity}%)`;
+            } else if (APP_STATE.bgFilterFx === 'dream') {
+                // Capped blur to 6px max for smooth performance
+                filterString += ` blur(${Math.min(6, 3 * intensity)}px) brightness(${100 + 15 * intensity}%) saturate(${100 - 30 * intensity}%)`;
+            }
+
+            if (APP_STATE.bgBlur > 0) {
+                // Capped blur to 12px max for smooth performance
+                filterString += ` blur(${Math.min(12, APP_STATE.bgBlur)}px)`;
+            }
+
+            if (filterString.trim()) {
+                ctx.filter = filterString.trim();
+            }
+
+            if (APP_STATE.bgType === 'preset') {
+                drawPresetMotionBackground(ctx, w, h);
+            } else if ((APP_STATE.bgType === 'image' || APP_STATE.bgType === 'video') && APP_STATE.bgElement) {
+                ctx.globalAlpha = APP_STATE.bgOpacity * alphaMultiplier;
+
+                let bgW = APP_STATE.bgElement.videoWidth || APP_STATE.bgElement.width;
+                let bgH = APP_STATE.bgElement.videoHeight || APP_STATE.bgElement.height;
+
+                if (bgW && bgH) {
+                    let nw = w, nh = h, nx = 0, ny = 0;
+                    if (APP_STATE.bgFitMode === 'cover') {
+                        let scale = Math.max(w / bgW, h / bgH);
+                        nw = bgW * scale; nh = bgH * scale;
+                        nx = (w - nw) / 2; ny = (h - nh) / 2;
+                    } else if (APP_STATE.bgFitMode === 'contain') {
+                        let scale = Math.min(w / bgW, h / bgH);
+                        nw = bgW * scale; nh = bgH * scale;
+                        nx = (w - nw) / 2; ny = (h - nh) / 2;
+                    }
+                    ctx.drawImage(APP_STATE.bgElement, nx, ny, nw, nh);
+                }
+            }
+            ctx.restore();
+
+            if (APP_STATE.bgFilterFx === 'warm') {
+                ctx.save();
+                ctx.fillStyle = `rgba(245, 158, 11, ${0.35 * intensity})`;
+                ctx.globalCompositeOperation = 'color-burn';
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            } else if (APP_STATE.bgFilterFx === 'cool') {
+                ctx.save();
+                ctx.fillStyle = `rgba(14, 165, 233, ${0.35 * intensity})`;
+                ctx.globalCompositeOperation = 'color-burn';
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+
+            if (APP_STATE.bgMotionFx === 'flash' && bassEnergy > 0.55) {
+                ctx.save();
+                ctx.fillStyle = `rgba(255, 255, 255, ${(bassEnergy - 0.4) * 1.5 * APP_STATE.bgFxSens})`;
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+
+            if (APP_STATE.bgMotionFx === 'vignette') {
+                ctx.save();
+                const rad = Math.max(w, h) * 0.75;
+                const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.15, w / 2, h / 2, rad);
+                grad.addColorStop(0, 'rgba(0,0,0,0)');
+                grad.addColorStop(1, `rgba(0,0,0,${0.85 * APP_STATE.bgFxSens})`);
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+
+            // OPTIMIZATION: Render noise grain using fast pre-generated offscreen canvas pattern
+            if (APP_STATE.bgFilterFx === 'grain') {
+                ctx.save();
+                const pattern = ctx.createPattern(getNoisePatternCanvas(), 'repeat');
+                ctx.fillStyle = pattern;
+                ctx.globalAlpha = 0.25 * intensity;
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+
+            if (APP_STATE.bgDim > 0) {
+                ctx.save();
+                ctx.fillStyle = `rgba(0, 0, 0, ${APP_STATE.bgDim})`;
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+        }
+
+        function getOverlayProcessedImage(overlay) {
+            if (!overlay.chromaBlack) return overlay.img;
+
+            if (!overlay.cachedCanvas || overlay.needsUpdate) {
+                const offCanvas = document.createElement('canvas');
+                offCanvas.width = overlay.img.width || 100;
+                offCanvas.height = overlay.img.height || 100;
+                const offCtx = offCanvas.getContext('2d');
+                offCtx.drawImage(overlay.img, 0, 0);
+
+                const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
+                const data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i] < 35 && data[i+1] < 35 && data[i+2] < 35) {
+                        data[i+3] = 0;
+                    }
+                }
+                offCtx.putImageData(imgData, 0, 0);
+                overlay.cachedCanvas = offCanvas;
+                overlay.needsUpdate = false;
+            }
+            return overlay.cachedCanvas;
+        }
+
+        function drawOverlaysOnCanvas(ctx, w, h, layerOrder, freqData, bassEnergy) {
+            const time = Date.now() * 0.001;
+
+            APP_STATE.overlays.forEach(item => {
+                if (item.layerOrder !== layerOrder) return;
+                if (!item.img) return;
+
+                ctx.save();
+                let x = (item.x / 100) * w;
+                let y = (item.y / 100) * h;
+                let scale = (item.scale || 50) / 100;
+                let rotation = 0;
+                let alpha = item.opacity !== undefined ? item.opacity : 1.0;
+                let brightnessFilter = 100;
+
+                const anim = item.anim || 'none';
+                if (anim === 'pan') {
+                    x += Math.sin(time * 1.5) * 20;
+                    y += Math.cos(time * 1.2) * 15;
+                } else if (anim === 'denyut') {
+                    scale *= (1.0 + bassEnergy * 0.3);
+                } else if (anim === 'blitz') {
+                    const strobe = Math.sin(time * 30);
+                    if (APP_STATE.isPlaying) {
+                        alpha *= bassEnergy > 0.2 ? (strobe > 0 ? 1.0 : 0.08) : (strobe > 0.3 ? 1.0 : 0.2);
+                    } else {
+                        alpha *= strobe > 0 ? 1.0 : 0.15;
+                    }
+                } else if (anim === 'flash') {
+                    const isFlashPeak = APP_STATE.isPlaying ? (bassEnergy > 0.25) : (Math.sin(time * 4) > 0.65);
+                    if (isFlashPeak) {
+                        scale *= (1.0 + (APP_STATE.isPlaying ? bassEnergy * 0.45 : 0.25));
+                        brightnessFilter = 220;
+                        ctx.shadowColor = '#ffffff';
+                        // Capped shadowBlur radius
+                        ctx.shadowBlur = 22;
+                    }
+                } else if (anim === 'float') {
+                    y += Math.sin(time * 2) * 12;
+                } else if (anim === 'shake') {
+                    x += (Math.random() - 0.5) * 8;
+                    y += (Math.random() - 0.5) * 8;
+                } else if (anim === 'zoom') {
+                    scale *= (1.0 + Math.sin(time * 2) * 0.15);
+                } else if (anim === 'rotate_cw') {
+                    rotation = time * 2;
+                } else if (anim === 'rotate_ccw') {
+                    rotation = -time * 2;
+                } else if (anim === 'orbit') {
+                    x += Math.cos(time * 1.5) * 35;
+                    y += Math.sin(time * 1.5) * 35;
+                } else if (anim === 'breathing') {
+                    scale *= (1.0 + Math.sin(time * 0.8) * 0.08);
+                } else if (anim === 'drift') {
+                    x = (x + time * 15) % w;
+                }
+
+                const srcDrawable = getOverlayProcessedImage(item);
+                const imgW = (srcDrawable.width || 100) * scale;
+                const imgH = (srcDrawable.height || 100) * scale;
+
+                ctx.translate(x, y);
+                if (rotation) ctx.rotate(rotation);
+                ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+                if (item.blendMode) ctx.globalCompositeOperation = item.blendMode;
+
+                if (brightnessFilter !== 100) {
+                    ctx.filter = `brightness(${brightnessFilter}%)`;
+                }
+
+                const fx = item.fx || 'none';
+                if (fx === 'glow') {
+                    ctx.shadowColor = '#10b981';
+                    ctx.shadowBlur = 18;
+                } else if (fx === 'drop_shadow') {
+                    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                    ctx.shadowOffsetX = 8;
+                    ctx.shadowOffsetY = 8;
+                    ctx.shadowBlur = 10;
+                }
+
+                ctx.drawImage(srcDrawable, -imgW / 2, -imgH / 2, imgW, imgH);
+                ctx.restore();
+            });
+        }
+
+        function drawVisualizerStyle(ctx, w, h, freqData) {
+            ctx.save();
+            const centerY = (APP_STATE.visPosY / 100) * h;
+            const scale = APP_STATE.visSize / 100;
+            const style = APP_STATE.visStyle;
+
+            if (style === 'spectrum') {
+                const numBars = 48;
+                const barWidth = (w / numBars) * 0.65;
+                const gap = (w / numBars) * 0.35;
+
+                for (let i = 0; i < numBars; i++) {
+                    const val = (freqData[i * 4] || 0) * APP_STATE.visSensitivity * scale;
+                    const barHeight = Math.max(6, (val / 255) * (h * 0.4));
+                    const x = i * (barWidth + gap) + gap / 2;
+
+                    const grad = ctx.createLinearGradient(x, centerY - barHeight / 2, x, centerY + barHeight / 2);
+                    grad.addColorStop(0, APP_STATE.visPrimaryColor);
+                    grad.addColorStop(1, APP_STATE.visSecondaryColor);
+
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.roundRect(x, centerY - barHeight / 2, barWidth, barHeight, 6);
+                    ctx.fill();
+                }
+            } else if (style === 'waveform') {
+                ctx.beginPath();
+                ctx.strokeStyle = APP_STATE.visPrimaryColor;
+                ctx.lineWidth = APP_STATE.visLineWidth;
+                ctx.shadowColor = APP_STATE.visPrimaryColor;
+                ctx.shadowBlur = 12;
+
+                const sliceWidth = w / freqData.length;
+                let x = 0;
+
+                for (let i = 0; i < freqData.length; i++) {
+                    const v = (freqData[i] / 128.0) * APP_STATE.visSensitivity;
+                    const y = centerY + (v - 1) * (h * 0.2) * scale;
+
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+
+                    x += sliceWidth;
+                }
+                ctx.stroke();
+            } else if (style === 'radial') {
+                const centerX = w * 0.5;
+                const baseRadius = 80 * scale;
+                const numRays = 64;
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+
+                for (let i = 0; i < numRays; i++) {
+                    const angle = (i / numRays) * Math.PI * 2;
+                    const val = (freqData[i * 2] || 0) * APP_STATE.visSensitivity;
+                    const rayLen = (val / 255) * (120 * scale);
+
+                    const x1 = Math.cos(angle) * baseRadius;
+                    const y1 = Math.sin(angle) * baseRadius;
+                    const x2 = Math.cos(angle) * (baseRadius + rayLen);
+                    const y2 = Math.sin(angle) * (baseRadius + rayLen);
+
+                    ctx.strokeStyle = i % 2 === 0 ? APP_STATE.visPrimaryColor : APP_STATE.visSecondaryColor;
+                    ctx.lineWidth = APP_STATE.visLineWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            } else if (style === 'particles') {
+                const centerX = w * 0.5;
+                for (let i = 0; i < 36; i++) {
+                    const angle = (i / 36) * Math.PI * 2 + Date.now() * 0.001;
+                    const val = (freqData[i * 5] || 0) * APP_STATE.visSensitivity;
+                    const dist = 60 * scale + (val / 255) * (180 * scale);
+                    const dotRadius = Math.max(3, (val / 255) * 12);
+
+                    const x = centerX + Math.cos(angle) * dist;
+                    const y = centerY + Math.sin(angle) * dist;
+
+                    ctx.fillStyle = APP_STATE.visPrimaryColor;
+                    ctx.beginPath();
+                    ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else if (style === 'mirror_bars') {
+                const numBars = 40;
+                const barWidth = (w / numBars) * 0.6;
+                const gap = (w / numBars) * 0.4;
+
+                for (let i = 0; i < numBars; i++) {
+                    const val = (freqData[i * 4] || 0) * APP_STATE.visSensitivity * scale;
+                    const hBar = (val / 255) * (h * 0.25);
+                    const x = i * (barWidth + gap) + gap / 2;
+
+                    ctx.fillStyle = i % 2 === 0 ? APP_STATE.visPrimaryColor : APP_STATE.visSecondaryColor;
+                    ctx.beginPath();
+                    ctx.roundRect(x, centerY - hBar, barWidth, hBar * 2, 4);
+                    ctx.fill();
+                }
+            } else if (style === 'circular_waveform') {
+                const centerX = w * 0.5;
+                const baseRadius = 90 * scale;
+                ctx.beginPath();
+                ctx.strokeStyle = APP_STATE.visPrimaryColor;
+                ctx.lineWidth = APP_STATE.visLineWidth;
+                ctx.shadowColor = APP_STATE.visPrimaryColor;
+                ctx.shadowBlur = 10;
+
+                for (let i = 0; i < 128; i++) {
+                    const angle = (i / 128) * Math.PI * 2;
+                    const val = (freqData[i * 2] || 0) * APP_STATE.visSensitivity;
+                    const r = baseRadius + (val / 255) * (60 * scale);
+                    const px = centerX + Math.cos(angle) * r;
+                    const py = centerY + Math.sin(angle) * r;
+
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            } else if (style === 'bars_3d') {
+                const numBars = 24;
+                const barWidth = (w / numBars) * 0.7;
+                for (let i = 0; i < numBars; i++) {
+                    const val = (freqData[i * 6] || 0) * APP_STATE.visSensitivity * scale;
+                    const hBar = Math.max(10, (val / 255) * (h * 0.35));
+                    const x = i * (w / numBars) + 5;
+                    const y = centerY + hBar / 2;
+
+                    ctx.fillStyle = APP_STATE.visPrimaryColor;
+                    ctx.fillRect(x, y - hBar, barWidth, hBar);
+
+                    ctx.fillStyle = APP_STATE.visSecondaryColor;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - hBar);
+                    ctx.lineTo(x + 8, y - hBar - 8);
+                    ctx.lineTo(x + barWidth + 8, y - hBar - 8);
+                    ctx.lineTo(x + barWidth, y - hBar);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#064e3b';
+                    ctx.beginPath();
+                    ctx.moveTo(x + barWidth, y - hBar);
+                    ctx.lineTo(x + barWidth + 8, y - hBar - 8);
+                    ctx.lineTo(x + barWidth + 8, y - 8);
+                    ctx.lineTo(x + barWidth, y);
+                    ctx.fill();
+                }
+            } else if (style === 'liquid_blob') {
+                const centerX = w * 0.5;
+                const baseRadius = 85 * scale;
+                ctx.beginPath();
+                ctx.fillStyle = APP_STATE.visPrimaryColor;
+                ctx.shadowColor = APP_STATE.visSecondaryColor;
+                ctx.shadowBlur = 18;
+
+                for (let i = 0; i <= 32; i++) {
+                    const idx = i % 32;
+                    const angle = (idx / 32) * Math.PI * 2;
+                    const val = (freqData[idx * 6] || 0) * APP_STATE.visSensitivity;
+                    const r = baseRadius + Math.sin(angle * 3 + Date.now() * 0.003) * 15 + (val / 255) * (50 * scale);
+                    const px = centerX + Math.cos(angle) * r;
+                    const py = centerY + Math.sin(angle) * r;
+
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fill();
+            } else if (style === 'starburst') {
+                const centerX = w * 0.5;
+                const numRays = 72;
+                ctx.lineWidth = APP_STATE.visLineWidth;
+
+                for (let i = 0; i < numRays; i++) {
+                    const angle = (i / numRays) * Math.PI * 2;
+                    const val = (freqData[i * 3] || 0) * APP_STATE.visSensitivity;
+                    const len = (val / 255) * (180 * scale);
+
+                    ctx.strokeStyle = i % 2 === 0 ? APP_STATE.visPrimaryColor : APP_STATE.visSecondaryColor;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(centerX + Math.cos(angle) * len, centerY + Math.sin(angle) * len);
+                    ctx.stroke();
+                }
+            } else if (style === 'eq_grid') {
+                const cols = 20;
+                const rows = 12;
+                const colW = (w / cols) - 4;
+                const rowH = 10 * scale;
+
+                for (let c = 0; c < cols; c++) {
+                    const val = (freqData[c * 8] || 0) * APP_STATE.visSensitivity;
+                    const activeRows = Math.floor((val / 255) * rows);
+                    const x = c * (colW + 4) + 2;
+
+                    for (let r = 0; r < rows; r++) {
+                        const y = centerY + (rows / 2 - r) * (rowH + 3);
+                        ctx.fillStyle = r < activeRows ? (r > rows - 3 ? '#ef4444' : APP_STATE.visPrimaryColor) : '#1f2937';
+                        ctx.fillRect(x, y, colW, rowH);
+                    }
+                }
+            } else if (style === 'kaleidoscope') {
+                const centerX = w * 0.5;
+                const baseRadius = 60 * scale;
+                ctx.save();
+                ctx.translate(centerX, centerY);
+
+                for (let mirror = 0; mirror < 8; mirror++) {
+                    ctx.rotate((Math.PI * 2) / 8);
+                    for (let i = 0; i < 12; i++) {
+                        const val = (freqData[i * 10] || 0) * APP_STATE.visSensitivity;
+                        const r = baseRadius + (val / 255) * (80 * scale);
+                        ctx.fillStyle = i % 2 === 0 ? APP_STATE.visPrimaryColor : APP_STATE.visSecondaryColor;
+                        ctx.beginPath();
+                        ctx.arc(r, 0, Math.max(2, val * 0.05), 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        function drawPresetMotionBackground(ctx, w, h) {
+            const time = Date.now() * 0.0005;
+            ctx.save();
+
+            let grad;
+            if (APP_STATE.bgPresetName === 'cyberpunk') {
+                grad = ctx.createRadialGradient(w * 0.5, h * 0.5, 50, w * 0.5, h * 0.5, Math.max(w, h));
+                grad.addColorStop(0, '#8b5cf6');
+                grad.addColorStop(0.5, '#ec4899');
+                grad.addColorStop(1, '#0f172a');
+            } else if (APP_STATE.bgPresetName === 'aurora') {
+                grad = ctx.createLinearGradient(Math.sin(time) * w, 0, w, h);
+                grad.addColorStop(0, '#06b6d4');
+                grad.addColorStop(0.5, '#10b981');
+                grad.addColorStop(1, '#0284c7');
+            } else if (APP_STATE.bgPresetName === 'sunset') {
+                grad = ctx.createLinearGradient(0, 0, 0, h);
+                grad.addColorStop(0, '#f97316');
+                grad.addColorStop(0.5, '#e11d48');
+                grad.addColorStop(1, '#312e81');
+            } else {
+                grad = ctx.createRadialGradient(w * 0.2, h * 0.2, 20, w * 0.8, h * 0.8, Math.max(w, h));
+                grad.addColorStop(0, '#10b981');
+                grad.addColorStop(0.7, '#064e3b');
+                grad.addColorStop(1, '#022c22');
+            }
+
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+            ctx.restore();
+        }
+
+        function drawTextOverlaysOnCanvas(ctx, w, h, freqData, bassEnergy) {
+            const time = Date.now() * 0.001;
+
+            APP_STATE.textOverlays.forEach(item => {
+                ctx.save();
+                let x = (item.x / 100) * w;
+                let y = (item.y / 100) * h;
+                let fontSize = item.size;
+                let rotation = item.rotation || 0;
+                let alpha = 1.0;
+                let displayText = item.text;
+                let isGlitching = false;
+
+                const anim = item.anim || 'none';
+                if (anim === 'denyut') {
+                    fontSize *= (1.0 + (APP_STATE.isPlaying ? bassEnergy * 0.4 : Math.sin(time * 3) * 0.1));
+                } else if (anim === 'pan') {
+                    x += Math.sin(time * 1.5) * 20;
+                    y += Math.cos(time * 1.2) * 12;
+                } else if (anim === 'blitz') {
+                    const strobe = Math.sin(time * 30);
+                    if (APP_STATE.isPlaying) {
+                        alpha = bassEnergy > 0.2 ? (strobe > 0 ? 1.0 : 0.08) : (strobe > 0.3 ? 1.0 : 0.2);
+                    } else {
+                        alpha = strobe > 0 ? 1.0 : 0.15;
+                    }
+                } else if (anim === 'flash') {
+                    const isPeak = APP_STATE.isPlaying ? (bassEnergy > 0.25) : (Math.sin(time * 4) > 0.65);
+                    if (isPeak) {
+                        fontSize *= (1.0 + (APP_STATE.isPlaying ? bassEnergy * 0.55 : 0.25));
+                        ctx.shadowColor = '#ffffff';
+                        // Capped shadowBlur radius
+                        ctx.shadowBlur = 22;
+                    }
+                } else if (anim === 'float') {
+                    y += Math.sin(time * 2.5) * 15;
+                } else if (anim === 'shake') {
+                    x += (Math.random() - 0.5) * 8;
+                    y += (Math.random() - 0.5) * 8;
+                } else if (anim === 'glitch') {
+                    if (Math.random() < 0.35 || (APP_STATE.isPlaying && bassEnergy > 0.3)) {
+                        isGlitching = true;
+                    }
+                } else if (anim === 'typewriter') {
+                    const totalChars = item.text.length;
+                    const charIdx = Math.floor((time * 6) % (totalChars + 5));
+                    displayText = item.text.substring(0, Math.min(totalChars, charIdx));
+                } else if (anim === 'bounce') {
+                    y += -Math.abs(Math.sin(time * 3.5)) * 25;
+                } else if (anim === 'flip3d') {
+                    ctx.scale(Math.cos(time * 2.5), 1);
+                }
+
+                ctx.translate(x, y);
+                if (rotation) ctx.rotate((rotation * Math.PI) / 180);
+                ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+
+                ctx.font = `700 ${fontSize}px '${item.font}', sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                if (item.bgBox) {
+                    const metrics = ctx.measureText(displayText);
+                    const padX = fontSize * 0.4;
+                    const padY = fontSize * 0.25;
+                    const boxWidth = metrics.width + padX * 2;
+                    const boxHeight = fontSize + padY;
+
+                    ctx.fillStyle = item.bgBoxColor || "rgba(0,0,0,0.7)";
+                    ctx.beginPath();
+                    ctx.roundRect(-boxWidth / 2, -boxHeight / 2, boxWidth, boxHeight, 8);
+                    ctx.fill();
+                }
+
+                if (isGlitching) {
+                    const glitchOffset = 6 + Math.random() * 8;
+                    ctx.save();
+                    ctx.fillStyle = '#00ffff';
+                    ctx.fillText(displayText, -glitchOffset, (Math.random() - 0.5) * 4);
+                    ctx.fillStyle = '#ff0055';
+                    ctx.fillText(displayText, glitchOffset, (Math.random() - 0.5) * 4);
+                    ctx.restore();
+                }
+
+                if (anim === 'wave') {
+                    const totalWidth = ctx.measureText(displayText).width;
+                    let startX = -totalWidth / 2;
+                    
+                    for (let i = 0; i < displayText.length; i++) {
+                        const char = displayText[i];
+                        const charWidth = ctx.measureText(char).width;
+                        const charY = Math.sin(time * 6 + i * 0.6) * (fontSize * 0.3);
+                        
+                        ctx.save();
+                        ctx.translate(startX + charWidth / 2, charY);
+                        renderTextWithFX(ctx, char, item, fontSize);
+                        ctx.restore();
+                        
+                        startX += charWidth;
+                    }
+                } else {
+                    renderTextWithFX(ctx, displayText, item, fontSize);
+                }
+
+                ctx.restore();
+            });
+        }
+
+        function renderTextWithFX(ctx, text, item, fontSize) {
+            const fx = item.fx || 'soft';
+            if (fx === 'glow') {
+                ctx.shadowColor = item.color;
+                ctx.shadowBlur = 18; // Capped for performance
+                ctx.fillStyle = item.color;
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'neon') {
+                ctx.shadowColor = item.color;
+                ctx.shadowBlur = 20; // Capped for performance
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = Math.max(1, fontSize * 0.04);
+                ctx.strokeText(text, 0, 0);
+                ctx.fillStyle = item.color;
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'outline') {
+                ctx.strokeStyle = item.strokeColor || "#000000";
+                ctx.lineWidth = Math.max(2, fontSize * 0.1);
+                ctx.strokeText(text, 0, 0);
+                ctx.fillStyle = item.color;
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'emboss') {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillText(text, -2, -2);
+                ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                ctx.fillText(text, 2, 2);
+                ctx.fillStyle = item.color;
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'fire') {
+                const grad = ctx.createLinearGradient(0, -fontSize / 2, 0, fontSize / 2);
+                grad.addColorStop(0, '#fef08a');
+                grad.addColorStop(0.5, '#f97316');
+                grad.addColorStop(1, '#dc2626');
+                ctx.fillStyle = grad;
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'ice') {
+                const grad = ctx.createLinearGradient(0, -fontSize / 2, 0, fontSize / 2);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.6, '#38bdf8');
+                grad.addColorStop(1, '#0284c7');
+                ctx.fillStyle = grad;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.strokeText(text, 0, 0);
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'chrome') {
+                const grad = ctx.createLinearGradient(0, -fontSize / 2, 0, fontSize / 2);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.3, '#94a3b8');
+                grad.addColorStop(0.5, '#0f172a');
+                grad.addColorStop(0.7, '#e2e8f0');
+                grad.addColorStop(1, '#ffffff');
+                ctx.fillStyle = grad;
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'rainbow') {
+                const grad = ctx.createLinearGradient(-100, 0, 100, 0);
+                grad.addColorStop(0, '#ef4444');
+                grad.addColorStop(0.2, '#f97316');
+                grad.addColorStop(0.4, '#eab308');
+                grad.addColorStop(0.6, '#22c55e');
+                grad.addColorStop(0.8, '#3b82f6');
+                grad.addColorStop(1, '#a855f7');
+                ctx.fillStyle = grad;
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'gold') {
+                const grad = ctx.createLinearGradient(0, -fontSize / 2, 0, fontSize / 2);
+                grad.addColorStop(0, '#fef08a');
+                grad.addColorStop(0.5, '#eab308');
+                grad.addColorStop(1, '#854d0e');
+                ctx.fillStyle = grad;
+                ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                ctx.shadowOffsetY = 3;
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'glass') {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.lineWidth = 1.5;
+                ctx.strokeText(text, 0, 0);
+                ctx.fillText(text, 0, 0);
+            } else if (fx === 'comic') {
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = Math.max(4, fontSize * 0.15);
+                ctx.strokeText(text, 0, 0);
+                ctx.fillStyle = item.color;
+                ctx.fillText(text, 0, 0);
+            } else {
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = item.color;
+                ctx.fillText(text, 0, 0);
+            }
+        }
+    </script>
+</body>
+</html>
