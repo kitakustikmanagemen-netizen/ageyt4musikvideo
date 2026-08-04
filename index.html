@@ -61,6 +61,14 @@
         .ratio-1-1 { aspect-ratio: 1 / 1; }
         .ratio-16-9 { aspect-ratio: 16 / 9; }
 
+        /* Mini equalizer bars — indikator "Now Playing" bertema musik */
+        @keyframes eqbar1 { 0%, 100% { height: 4px; } 50% { height: 13px; } }
+        @keyframes eqbar2 { 0%, 100% { height: 11px; } 50% { height: 3px; } }
+        @keyframes eqbar3 { 0%, 100% { height: 6px; } 50% { height: 14px; } }
+        .animate-eqbar1 { animation: eqbar1 0.62s ease-in-out infinite; }
+        .animate-eqbar2 { animation: eqbar2 0.48s ease-in-out infinite; }
+        .animate-eqbar3 { animation: eqbar3 0.71s ease-in-out infinite; }
+
         .text-overlay-node {
             cursor: move;
             user-select: none;
@@ -91,8 +99,8 @@
                 <i class="fa-solid font-bold fa-compact-disc text-white text-base sm:text-lg animate-spin" style="animation-duration: 8s;"></i>
             </div>
             <div>
-                <h1 class="font-extrabold tracking-wider text-sm sm:text-lg bg-gradient-to-r from-white via-slate-200 to-brand-500 bg-clip-text text-transparent flex items-center gap-2">
-                    AGE YT#4 <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold tracking-normal hidden sm:inline-block">Musik Video Studio</span>
+                <h1 class="font-orbitron font-extrabold tracking-wider text-sm sm:text-lg bg-gradient-to-r from-white via-slate-200 to-brand-500 bg-clip-text text-transparent flex items-center gap-2">
+                    AGE YT#4 <span class="font-sans text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold tracking-normal hidden sm:inline-block">Musik Video Studio</span>
                 </h1>
                 <p class="text-[10px] sm:text-[11px] text-slate-400 hidden md:block">Editor Visualizer Musik Pro dengan FX Teks, Overlay & Recording Studio</p>
             </div>
@@ -156,7 +164,7 @@
                             <i class="fa-solid fa-music text-2xl animate-pulse"></i>
                         </div>
                         <h3 class="font-bold text-slate-200 text-sm">Belum Ada File Audio</h3>
-                        <p class="text-xs text-slate-400 max-w-xs mt-1">Upload lagu MP3 / WAV di tab "Audio" atau seret file langsung ke area canvas ini.</p>
+                        <p class="text-xs text-slate-400 max-w-xs mt-1">Upload 1 atau lebih lagu MP3 / WAV di tab "Audio" (bisa jadi playlist) atau seret file langsung ke area canvas ini.</p>
                     </div>
 
                     <div id="recStatusBadge" class="hidden absolute top-3 left-3 bg-red-600/90 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full flex items-center gap-2 font-bold shadow-lg animate-pulse z-30">
@@ -182,9 +190,16 @@
                             <i id="playIcon" class="fa-solid fa-play text-sm ml-0.5"></i>
                         </button>
 
-                        <div class="text-left max-w-[160px] sm:max-w-xs truncate">
-                            <p id="audioFileName" class="text-xs font-semibold text-slate-200 truncate">Tidak ada audio terpilih</p>
-                            <p id="audioFormatBadge" class="text-[10px] text-slate-500 font-mono">Status: Idle</p>
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div id="miniEqBars" class="hidden items-end gap-0.5 h-3.5 shrink-0">
+                                <span class="w-0.5 bg-brand-500 rounded-full animate-eqbar1"></span>
+                                <span class="w-0.5 bg-brand-500 rounded-full animate-eqbar2"></span>
+                                <span class="w-0.5 bg-brand-500 rounded-full animate-eqbar3"></span>
+                            </div>
+                            <div class="text-left max-w-[130px] sm:max-w-xs truncate">
+                                <p id="audioFileName" class="text-xs font-semibold text-slate-200 truncate">Tidak ada audio terpilih</p>
+                                <p id="audioFormatBadge" class="text-[10px] text-slate-500 font-mono">Status: Idle</p>
+                            </div>
                         </div>
                     </div>
 
@@ -194,7 +209,7 @@
                             <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="1" class="w-14 sm:w-18 h-1.5 bg-slate-700 rounded appearance-none accent-brand-500 cursor-pointer">
                         </div>
 
-                        <button id="btnRemoveAudio" title="Hapus Audio" class="p-2 text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition">
+                        <button id="btnRemoveAudio" title="Hapus Semua Audio" class="p-2 text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
@@ -204,7 +219,7 @@
         </section>
 
         <!-- RIGHT COLUMN: CONTROL TABS WITH ACCORDIONS -->
-        <section class="lg:col-span-5 xl:col-span-5 bg-brand-panel border border-brand-border rounded-2xl flex flex-col h-[750px] lg:h-auto shadow-xl overflow-hidden">
+        <section class="lg:col-span-5 xl:col-span-5 bg-brand-panel border border-brand-border rounded-2xl flex flex-col h-[70vh] min-h-[420px] max-h-[750px] lg:h-auto shadow-xl overflow-hidden">
             
             <div class="flex overflow-x-auto border-b border-brand-border bg-slate-950/80 p-1 text-xs no-scrollbar sticky top-0 z-10">
                 <button data-tab="tab-audio" class="tab-btn active min-w-[65px] flex-1 py-2.5 flex flex-col items-center gap-1 font-semibold text-brand-500 border-b-2 border-brand-500 transition shrink-0">
@@ -232,32 +247,39 @@
                 <!-- TAB 1: AUDIO UPLOAD & INFO -->
                 <div id="tab-audio" class="tab-content space-y-4">
                     <div>
-                        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5">Source Audio</h3>
-                        <p class="text-xs text-slate-400">Pilih file lagu atau voiceover untuk mendatangkan visualisasi.</p>
+                        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5">Source Audio / Playlist</h3>
+                        <p class="text-xs text-slate-400">Upload 1 atau lebih lagu — akan diputar & direkam berurutan jadi 1 video panjang.</p>
                     </div>
 
                     <div class="border-2 border-dashed border-slate-700 hover:border-brand-500/60 bg-slate-900/50 hover:bg-slate-900 transition rounded-xl p-5 text-center flex flex-col items-center justify-center cursor-pointer group" onclick="document.getElementById('audioInput').click()">
-                        <input type="file" id="audioInput" accept="audio/*" class="hidden">
+                        <input type="file" id="audioInput" accept="audio/*" multiple class="hidden">
                         <div class="w-12 h-12 rounded-2xl bg-brand-500/10 group-hover:bg-brand-500/20 text-brand-500 flex items-center justify-center mb-2 transition shadow-inner">
                             <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
                         </div>
-                        <p class="text-xs font-semibold text-slate-200">Klik untuk upload file Audio</p>
-                        <p class="text-[11px] text-slate-500 mt-1">Mendukung Format: MP3, WAV, M4A, AAC, OGG</p>
+                        <p class="text-xs font-semibold text-slate-200">Klik untuk Tambah Audio (bisa pilih banyak)</p>
+                        <p class="text-[11px] text-slate-500 mt-1">Format: MP3, WAV, M4A, AAC, OGG • Playlist otomatis tersambung</p>
                     </div>
 
-                    <div id="audioMetaBox" class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 text-xs space-y-2 hidden shadow-inner">
-                        <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-500">Nama File:</span>
-                            <span id="metaFileName" class="font-mono text-slate-200 truncate max-w-[180px]">-</span>
+                    <div id="playlistSection" class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-list-ol text-brand-500"></i> Playlist
+                                <span id="playlistCountBadge" class="text-[10px] font-mono bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded-full">0 lagu</span>
+                            </h4>
+                            <button id="btnClearPlaylist" class="hidden text-[10px] text-slate-500 hover:text-red-400 transition">
+                                <i class="fa-solid fa-trash-can mr-1"></i>Hapus Semua
+                            </button>
                         </div>
-                        <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-500">Durasi:</span>
-                            <span id="metaDuration" class="font-mono text-brand-500 font-bold">00:00</span>
+
+                        <p id="playlistEmptyHint" class="text-[11px] text-slate-500 italic px-1">Belum ada lagu di playlist.</p>
+
+                        <ul id="playlistItems" class="space-y-1.5 max-h-56 overflow-y-auto pr-1"></ul>
+
+                        <div id="playlistTotalBar" class="hidden items-center justify-between bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-2 text-xs">
+                            <span class="text-slate-500 flex items-center gap-1.5"><i class="fa-solid fa-clock text-brand-500"></i>Total Durasi Video:</span>
+                            <span id="playlistTotalDuration" class="font-mono text-brand-500 font-bold">00:00</span>
                         </div>
-                        <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-500">Sample Rate:</span>
-                            <span id="metaSampleRate" class="font-mono text-slate-400">44.1 kHz</span>
-                        </div>
+                        <p class="text-[10px] text-slate-500 italic px-1">Tips: klik nama lagu untuk lompat putar ke lagu itu. Gunakan panah ↑↓ untuk atur urutan sebelum rekam.</p>
                     </div>
                 </div>
 
@@ -965,6 +987,10 @@
             isAudioLoaded: false,
             isPlaying: false,
 
+            // Playlist Multi-Audio State
+            playlist: [],
+            currentTrackIndex: -1,
+
             // Performance & FPS Monitoring State
             fps: 0,
             lastFrameTime: performance.now(),
@@ -1074,11 +1100,14 @@
             DOM.audioFormatBadge = document.getElementById('audioFormatBadge');
             DOM.volumeControl = document.getElementById('volumeControl');
             DOM.btnRemoveAudio = document.getElementById('btnRemoveAudio');
+            DOM.miniEqBars = document.getElementById('miniEqBars');
 
-            DOM.audioMetaBox = document.getElementById('audioMetaBox');
-            DOM.metaFileName = document.getElementById('metaFileName');
-            DOM.metaDuration = document.getElementById('metaDuration');
-            DOM.metaSampleRate = document.getElementById('metaSampleRate');
+            DOM.playlistItems = document.getElementById('playlistItems');
+            DOM.playlistCountBadge = document.getElementById('playlistCountBadge');
+            DOM.playlistEmptyHint = document.getElementById('playlistEmptyHint');
+            DOM.playlistTotalBar = document.getElementById('playlistTotalBar');
+            DOM.playlistTotalDuration = document.getElementById('playlistTotalDuration');
+            DOM.btnClearPlaylist = document.getElementById('btnClearPlaylist');
 
             DOM.bgFileInput = document.getElementById('bgFileInput');
             DOM.bgInfoBar = document.getElementById('bgInfoBar');
@@ -1110,43 +1139,66 @@
             DOM.audioElement.crossOrigin = "anonymous";
 
             DOM.audioInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                handleAudioFileUpload(file);
+                const files = Array.from(e.target.files || []);
+                if (!files.length) return;
+                addAudioFilesToPlaylist(files);
+                e.target.value = ''; // reset agar file yang sama bisa dipilih ulang nanti
             });
 
+            // Metadata durasi track aktif (fallback jika probeAudioDuration belum sempat resolve)
             DOM.audioElement.addEventListener('loadedmetadata', () => {
                 const dur = DOM.audioElement.duration || 0;
-                DOM.audioScrubber.max = dur;
-                DOM.timeTotal.textContent = formatTime(dur);
-                DOM.metaDuration.textContent = formatTime(dur);
-                if (APP_STATE.audioContext) {
-                    DOM.metaSampleRate.textContent = `${(APP_STATE.audioContext.sampleRate / 1000).toFixed(1)} kHz`;
+                const track = APP_STATE.playlist[APP_STATE.currentTrackIndex];
+                if (track && (!track.duration || track.duration === 0) && dur > 0) {
+                    track.duration = dur;
+                    renderPlaylistUI();
+                    updateOverallDurationUI();
                 }
             });
 
+            // Update posisi scrubber & waktu berjalan berbasis TOTAL playlist, bukan per-track
             DOM.audioElement.addEventListener('timeupdate', () => {
-                if (!APP_STATE.isRecording) {
-                    DOM.audioScrubber.value = DOM.audioElement.currentTime;
-                    DOM.timeCurrent.textContent = formatTime(DOM.audioElement.currentTime);
+                if (!APP_STATE.isRecording && APP_STATE.currentTrackIndex >= 0) {
+                    const overall = getCumulativeStart(APP_STATE.currentTrackIndex) + DOM.audioElement.currentTime;
+                    DOM.audioScrubber.value = overall;
+                    DOM.timeCurrent.textContent = formatTime(overall);
                 }
             });
 
+            // Saat 1 lagu selesai: otomatis lanjut ke lagu berikutnya di playlist (video tetap 1 rekaman panjang)
             DOM.audioElement.addEventListener('ended', () => {
-                APP_STATE.isPlaying = false;
-                DOM.playIcon.className = "fa-solid fa-play text-sm ml-0.5";
-                if (APP_STATE.isRecording) {
-                    stopRecordingProcess();
+                const nextIndex = APP_STATE.currentTrackIndex + 1;
+                if (nextIndex < APP_STATE.playlist.length) {
+                    loadTrackAtIndex(nextIndex, true);
+                } else {
+                    APP_STATE.isPlaying = false;
+                    DOM.playIcon.className = "fa-solid fa-play text-sm ml-0.5";
+                    updateMiniEqUI();
+                    if (APP_STATE.isRecording) {
+                        stopRecordingProcess();
+                    }
                 }
             });
 
             DOM.btnPlayPause.addEventListener('click', toggleAudioPlayback);
 
             DOM.audioScrubber.addEventListener('input', (e) => {
-                if (DOM.audioElement) {
-                    DOM.audioElement.currentTime = parseFloat(e.target.value);
-                    DOM.timeCurrent.textContent = formatTime(DOM.audioElement.currentTime);
+                if (APP_STATE.isRecording || !APP_STATE.playlist.length) return;
+                const target = parseFloat(e.target.value);
+                let acc = 0;
+                let targetIndex = APP_STATE.playlist.length - 1;
+                for (let i = 0; i < APP_STATE.playlist.length; i++) {
+                    const dur = APP_STATE.playlist[i].duration || 0;
+                    if (target < acc + dur) { targetIndex = i; break; }
+                    acc += dur;
                 }
+                const offsetInTrack = Math.max(0, target - acc);
+                if (targetIndex !== APP_STATE.currentTrackIndex) {
+                    loadTrackAtIndexWithSeek(targetIndex, offsetInTrack, APP_STATE.isPlaying);
+                } else {
+                    DOM.audioElement.currentTime = offsetInTrack;
+                }
+                DOM.timeCurrent.textContent = formatTime(target);
             });
 
             DOM.volumeControl.addEventListener('input', (e) => {
@@ -1154,21 +1206,265 @@
             });
 
             DOM.btnRemoveAudio.addEventListener('click', () => {
-                DOM.audioElement.pause();
-                DOM.audioElement.src = "";
-                APP_STATE.isAudioLoaded = false;
-                APP_STATE.isPlaying = false;
+                if (!APP_STATE.playlist.length) return;
+                if (!confirm("Hapus semua lagu dari playlist?")) return;
+                clearPlaylist();
+            });
 
-                DOM.btnPlayPause.disabled = true;
-                DOM.audioScrubber.disabled = true;
-                DOM.audioScrubber.value = 0;
-                DOM.timeCurrent.textContent = "0:00";
-                DOM.timeTotal.textContent = "0:00";
+            if (DOM.btnClearPlaylist) {
+                DOM.btnClearPlaylist.addEventListener('click', () => {
+                    if (!confirm("Hapus semua lagu dari playlist?")) return;
+                    clearPlaylist();
+                });
+            }
+        }
+
+        // Mengukur durasi file audio tanpa mengganggu track yang sedang aktif diputar
+        function probeAudioDuration(url) {
+            return new Promise((resolve) => {
+                const temp = new Audio();
+                temp.preload = 'metadata';
+                temp.addEventListener('loadedmetadata', () => resolve(temp.duration || 0));
+                temp.addEventListener('error', () => resolve(0));
+                temp.src = url;
+            });
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function getPlaylistTotalDuration() {
+            return APP_STATE.playlist.reduce((sum, t) => sum + (t.duration || 0), 0);
+        }
+
+        function getCumulativeStart(index) {
+            let sum = 0;
+            for (let i = 0; i < index; i++) sum += (APP_STATE.playlist[i].duration || 0);
+            return sum;
+        }
+
+        function updateOverallDurationUI() {
+            const total = getPlaylistTotalDuration();
+            DOM.audioScrubber.max = total > 0 ? total : 100;
+            DOM.timeTotal.textContent = formatTime(total);
+            if (DOM.playlistTotalDuration) DOM.playlistTotalDuration.textContent = formatTime(total);
+        }
+
+        function updatePlayerNowPlayingUI() {
+            const n = APP_STATE.playlist.length;
+            const idx = APP_STATE.currentTrackIndex;
+            if (n === 0 || idx < 0 || !APP_STATE.playlist[idx]) {
                 DOM.audioFileName.textContent = "Tidak ada audio terpilih";
                 DOM.audioFormatBadge.textContent = "Status: Idle";
-                DOM.audioMetaBox.classList.add('hidden');
-                DOM.emptyPlaceholder.classList.remove('opacity-0');
-                DOM.playIcon.className = "fa-solid fa-play text-sm ml-0.5";
+                return;
+            }
+            const track = APP_STATE.playlist[idx];
+            DOM.audioFileName.textContent = n > 1 ? `Lagu ${idx + 1}/${n}: ${track.name}` : track.name;
+            DOM.audioFormatBadge.textContent = `Siap${track.sizeMB ? ' (' + track.sizeMB + ' MB)' : ''}`;
+        }
+
+        function updateMiniEqUI() {
+            if (!DOM.miniEqBars) return;
+            DOM.miniEqBars.classList.toggle('hidden', !APP_STATE.isPlaying);
+            DOM.miniEqBars.classList.toggle('flex', APP_STATE.isPlaying);
+        }
+
+        // Menambahkan 1 atau lebih file audio ke playlist (append, urutan sesuai upload)
+        async function addAudioFilesToPlaylist(files) {
+            if (APP_STATE.isRecording) {
+                alert("Tidak bisa menambah lagu saat sedang merekam.");
+                return;
+            }
+            const wasEmpty = APP_STATE.playlist.length === 0;
+            const validFiles = files.filter(f => f.type.startsWith('audio/'));
+            if (!validFiles.length) return;
+
+            validFiles.forEach(file => {
+                const url = URL.createObjectURL(file);
+                const track = {
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    url,
+                    sizeMB: (file.size / (1024 * 1024)).toFixed(1),
+                    duration: 0
+                };
+                APP_STATE.playlist.push(track);
+                probeAudioDuration(url).then(dur => {
+                    track.duration = dur || 0;
+                    renderPlaylistUI();
+                    updateOverallDurationUI();
+                });
+            });
+
+            APP_STATE.isAudioLoaded = APP_STATE.playlist.length > 0;
+            DOM.btnPlayPause.disabled = !APP_STATE.isAudioLoaded;
+            DOM.audioScrubber.disabled = !APP_STATE.isAudioLoaded;
+            DOM.emptyPlaceholder.classList.toggle('opacity-0', APP_STATE.isAudioLoaded);
+            DOM.emptyPlaceholder.classList.toggle('pointer-events-none', APP_STATE.isAudioLoaded);
+
+            if (wasEmpty && APP_STATE.playlist.length > 0) {
+                loadTrackAtIndex(0, false);
+            }
+            renderPlaylistUI();
+            updateOverallDurationUI();
+        }
+
+        // Memuat track pada index tertentu ke audio player utama
+        function loadTrackAtIndex(index, autoplay) {
+            if (index < 0 || index >= APP_STATE.playlist.length) return;
+            APP_STATE.currentTrackIndex = index;
+            const track = APP_STATE.playlist[index];
+            DOM.audioElement.src = track.url;
+            DOM.audioElement.load();
+            updatePlayerNowPlayingUI();
+            renderPlaylistUI();
+            if (autoplay) {
+                DOM.audioElement.play().then(() => {
+                    APP_STATE.isPlaying = true;
+                    DOM.playIcon.className = "fa-solid fa-pause text-sm";
+                    updateMiniEqUI();
+                    if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) {
+                        APP_STATE.bgElement.play();
+                    }
+                }).catch(err => console.error("Audio playback error:", err));
+            }
+        }
+
+        // Sama seperti loadTrackAtIndex, tapi langsung loncat ke posisi waktu tertentu (dipakai saat scrubbing)
+        function loadTrackAtIndexWithSeek(index, seekTime, autoplay) {
+            if (index < 0 || index >= APP_STATE.playlist.length) return;
+            APP_STATE.currentTrackIndex = index;
+            const track = APP_STATE.playlist[index];
+            DOM.audioElement.src = track.url;
+            DOM.audioElement.load();
+            updatePlayerNowPlayingUI();
+            renderPlaylistUI();
+
+            const onReady = () => {
+                DOM.audioElement.removeEventListener('loadedmetadata', onReady);
+                DOM.audioElement.currentTime = seekTime;
+                if (autoplay) {
+                    DOM.audioElement.play().then(() => {
+                        APP_STATE.isPlaying = true;
+                        DOM.playIcon.className = "fa-solid fa-pause text-sm";
+                        updateMiniEqUI();
+                    }).catch(err => console.error("Audio playback error:", err));
+                }
+            };
+            DOM.audioElement.addEventListener('loadedmetadata', onReady);
+        }
+
+        function removeTrack(id) {
+            if (APP_STATE.isRecording) {
+                alert("Tidak bisa mengubah playlist saat sedang merekam.");
+                return;
+            }
+            const idx = APP_STATE.playlist.findIndex(t => t.id === id);
+            if (idx === -1) return;
+            const wasCurrent = idx === APP_STATE.currentTrackIndex;
+
+            URL.revokeObjectURL(APP_STATE.playlist[idx].url);
+            APP_STATE.playlist.splice(idx, 1);
+
+            if (APP_STATE.playlist.length === 0) {
+                clearPlaylist();
+                return;
+            }
+
+            if (wasCurrent) {
+                const nextIdx = Math.min(idx, APP_STATE.playlist.length - 1);
+                loadTrackAtIndex(nextIdx, APP_STATE.isPlaying);
+            } else if (idx < APP_STATE.currentTrackIndex) {
+                APP_STATE.currentTrackIndex -= 1;
+            }
+            renderPlaylistUI();
+            updateOverallDurationUI();
+        }
+
+        function moveTrack(id, direction) {
+            if (APP_STATE.isRecording) {
+                alert("Tidak bisa mengubah urutan playlist saat sedang merekam.");
+                return;
+            }
+            const idx = APP_STATE.playlist.findIndex(t => t.id === id);
+            if (idx === -1) return;
+            const newIdx = idx + direction;
+            if (newIdx < 0 || newIdx >= APP_STATE.playlist.length) return;
+
+            const wasCurrent = idx === APP_STATE.currentTrackIndex;
+            const wasCurrentTarget = newIdx === APP_STATE.currentTrackIndex;
+
+            const tmp = APP_STATE.playlist[idx];
+            APP_STATE.playlist[idx] = APP_STATE.playlist[newIdx];
+            APP_STATE.playlist[newIdx] = tmp;
+
+            if (wasCurrent) APP_STATE.currentTrackIndex = newIdx;
+            else if (wasCurrentTarget) APP_STATE.currentTrackIndex = idx;
+
+            renderPlaylistUI();
+            updateOverallDurationUI();
+        }
+
+        function clearPlaylist() {
+            DOM.audioElement.pause();
+            APP_STATE.playlist.forEach(t => URL.revokeObjectURL(t.url));
+            APP_STATE.playlist = [];
+            APP_STATE.currentTrackIndex = -1;
+            APP_STATE.isAudioLoaded = false;
+            APP_STATE.isPlaying = false;
+            DOM.audioElement.removeAttribute('src');
+
+            DOM.btnPlayPause.disabled = true;
+            DOM.audioScrubber.disabled = true;
+            DOM.audioScrubber.value = 0;
+            DOM.audioScrubber.max = 100;
+            DOM.timeCurrent.textContent = "0:00";
+            DOM.timeTotal.textContent = "0:00";
+            DOM.playIcon.className = "fa-solid fa-play text-sm ml-0.5";
+            DOM.emptyPlaceholder.classList.remove('opacity-0', 'pointer-events-none');
+
+            updatePlayerNowPlayingUI();
+            renderPlaylistUI();
+            updateOverallDurationUI();
+            updateMiniEqUI();
+        }
+
+        function renderPlaylistUI() {
+            if (!DOM.playlistItems) return;
+            const n = APP_STATE.playlist.length;
+
+            DOM.playlistCountBadge.textContent = `${n} lagu`;
+            DOM.playlistEmptyHint.classList.toggle('hidden', n > 0);
+            DOM.btnClearPlaylist.classList.toggle('hidden', n === 0);
+            DOM.playlistTotalBar.classList.toggle('hidden', n === 0);
+            DOM.playlistTotalBar.classList.toggle('flex', n > 0);
+
+            DOM.playlistItems.innerHTML = '';
+            APP_STATE.playlist.forEach((track, i) => {
+                const isActive = i === APP_STATE.currentTrackIndex;
+                const li = document.createElement('li');
+                li.className = `flex items-center gap-2 border rounded-lg px-2.5 py-2 text-xs transition cursor-pointer ${isActive ? 'bg-brand-500/10 border-brand-500/50' : 'bg-slate-900/70 border-slate-800 hover:border-slate-700'}`;
+                li.innerHTML = `
+                    <span class="w-5 h-5 flex items-center justify-center rounded-full ${isActive ? 'bg-brand-500 text-slate-950' : 'bg-slate-800 text-slate-400'} font-bold text-[10px] shrink-0">${isActive ? '<i class="fa-solid fa-play text-[8px]"></i>' : (i + 1)}</span>
+                    <div class="flex-1 min-w-0">
+                        <p class="truncate font-medium ${isActive ? 'text-brand-400' : 'text-slate-200'}">${escapeHtml(track.name)}</p>
+                        <p class="text-[10px] text-slate-500 font-mono">${track.duration ? formatTime(track.duration) : '...'}${track.sizeMB ? ' • ' + track.sizeMB + ' MB' : ''}</p>
+                    </div>
+                    <button data-action="up" title="Naikkan urutan" class="p-1 text-slate-500 hover:text-brand-400"><i class="fa-solid fa-chevron-up text-[10px]"></i></button>
+                    <button data-action="down" title="Turunkan urutan" class="p-1 text-slate-500 hover:text-brand-400"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
+                    <button data-action="remove" title="Hapus lagu" class="p-1 text-slate-500 hover:text-red-400"><i class="fa-solid fa-xmark text-[10px]"></i></button>
+                `;
+                li.querySelector('[data-action="up"]').addEventListener('click', (e) => { e.stopPropagation(); moveTrack(track.id, -1); });
+                li.querySelector('[data-action="down"]').addEventListener('click', (e) => { e.stopPropagation(); moveTrack(track.id, 1); });
+                li.querySelector('[data-action="remove"]').addEventListener('click', (e) => { e.stopPropagation(); removeTrack(track.id); });
+                li.addEventListener('click', () => {
+                    if (APP_STATE.isRecording) return;
+                    loadTrackAtIndex(i, true);
+                });
+                DOM.playlistItems.appendChild(li);
             });
         }
 
@@ -1206,6 +1502,7 @@
                 }
                 APP_STATE.isPlaying = false;
                 DOM.playIcon.className = "fa-solid fa-play text-sm ml-0.5";
+                updateMiniEqUI();
             } else {
                 DOM.audioElement.play().then(() => {
                     APP_STATE.isPlaying = true;
@@ -1213,6 +1510,7 @@
                         APP_STATE.bgElement.play();
                     }
                     DOM.playIcon.className = "fa-solid fa-pause text-sm";
+                    updateMiniEqUI();
                 }).catch(err => {
                     console.error("Audio playback error:", err);
                 });
@@ -1848,23 +2146,6 @@
             populateSelectedTextEditor();
         }
 
-        function handleAudioFileUpload(file) {
-            if (!file) return;
-            const fileUrl = URL.createObjectURL(file);
-            DOM.audioElement.src = fileUrl;
-            DOM.audioElement.load();
-
-            APP_STATE.isAudioLoaded = true;
-            DOM.btnPlayPause.disabled = false;
-            DOM.audioScrubber.disabled = false;
-            DOM.audioFileName.textContent = file.name;
-            DOM.audioFormatBadge.textContent = `Siap ( ${(file.size / (1024 * 1024)).toFixed(1)} MB )`;
-
-            DOM.metaFileName.textContent = file.name;
-            DOM.audioMetaBox.classList.remove('hidden');
-            DOM.emptyPlaceholder.classList.add('opacity-0', 'pointer-events-none');
-        }
-
         function handleBgFileUpload(file) {
             if (!file) return;
             const url = URL.createObjectURL(file);
@@ -1955,9 +2236,10 @@
                 const files = dt.files;
                 if (!files || !files.length) return;
 
+                const audioFiles = [];
                 Array.from(files).forEach(file => {
                     if (file.type.startsWith('audio/')) {
-                        handleAudioFileUpload(file);
+                        audioFiles.push(file);
                     } else if (file.type.startsWith('image/')) {
                         if (APP_STATE.bgType !== 'none') {
                             addOverlayFromFile(file);
@@ -1968,6 +2250,7 @@
                         handleBgFileUpload(file);
                     }
                 });
+                if (audioFiles.length) addAudioFilesToPlaylist(audioFiles);
             }, false);
         }
 
@@ -2311,27 +2594,52 @@
                 clearInterval(APP_STATE.recTimerInterval);
             };
 
-            DOM.audioElement.currentTime = 0;
-            DOM.audioElement.play().then(() => {
-                APP_STATE.isPlaying = true;
-                APP_STATE.isRecording = true;
-                // FIX: 1 second timeslice chunking for buffer health
-                APP_STATE.mediaRecorder.start(1000);
+            // Rekam selalu dimulai dari LAGU PERTAMA di playlist, lalu lanjut otomatis
+            // ke lagu-lagu berikutnya (via event 'ended') sampai lagu terakhir selesai —
+            // sehingga hasilnya 1 file video utuh sepanjang total durasi playlist.
+            APP_STATE.isRecording = true;
 
-                if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) {
-                    APP_STATE.bgElement.currentTime = 0;
-                    APP_STATE.bgElement.play();
-                }
+            const beginPlaybackAndRecord = () => {
+                DOM.audioElement.play().then(() => {
+                    APP_STATE.isPlaying = true;
+                    APP_STATE.mediaRecorder.start(1000); // FIX: 1 second timeslice chunking for buffer health
 
-                DOM.playIcon.className = "fa-solid fa-pause text-sm";
-                DOM.recStatusBadge.classList.remove('hidden');
-                APP_STATE.recStartTime = Date.now();
+                    if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) {
+                        APP_STATE.bgElement.currentTime = 0;
+                        APP_STATE.bgElement.play();
+                    }
 
-                APP_STATE.recTimerInterval = setInterval(() => {
-                    const elapsed = Math.floor((Date.now() - APP_STATE.recStartTime) / 1000);
-                    DOM.recTimerText.textContent = `REC ${formatTime(elapsed)}`;
-                }, 500);
-            });
+                    DOM.playIcon.className = "fa-solid fa-pause text-sm";
+                    DOM.recStatusBadge.classList.remove('hidden');
+                    updateMiniEqUI();
+                    APP_STATE.recStartTime = Date.now();
+
+                    APP_STATE.recTimerInterval = setInterval(() => {
+                        const elapsed = Math.floor((Date.now() - APP_STATE.recStartTime) / 1000);
+                        DOM.recTimerText.textContent = `REC ${formatTime(elapsed)}`;
+                    }, 500);
+                }).catch(err => {
+                    console.error("Gagal memulai playback rekaman:", err);
+                    APP_STATE.isRecording = false;
+                });
+            };
+
+            if (APP_STATE.currentTrackIndex !== 0) {
+                APP_STATE.currentTrackIndex = 0;
+                const firstTrack = APP_STATE.playlist[0];
+                DOM.audioElement.src = firstTrack.url;
+                DOM.audioElement.load();
+                updatePlayerNowPlayingUI();
+                renderPlaylistUI();
+                DOM.audioElement.addEventListener('loadedmetadata', function onFirstReady() {
+                    DOM.audioElement.removeEventListener('loadedmetadata', onFirstReady);
+                    DOM.audioElement.currentTime = 0;
+                    beginPlaybackAndRecord();
+                }, { once: true });
+            } else {
+                DOM.audioElement.currentTime = 0;
+                beginPlaybackAndRecord();
+            }
         }
 
         function stopRecordingProcess() {
