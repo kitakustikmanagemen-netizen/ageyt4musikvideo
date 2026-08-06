@@ -171,6 +171,11 @@
                         <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
                         <span id="recTimerText">REC 00:00</span>
                     </div>
+
+                    <div id="exportPauseBanner" class="hidden absolute inset-x-2 bottom-2 bg-amber-600/95 backdrop-blur-sm text-white text-[11px] sm:text-xs px-3 py-2 rounded-xl items-center gap-2 font-semibold shadow-lg z-30 text-center justify-center">
+                        <i class="fa-solid fa-pause"></i>
+                        <span>Render dijeda otomatis — tab ini di-background. Kembali ke tab ini untuk lanjut.</span>
+                    </div>
                 </div>
 
             </div>
@@ -206,7 +211,7 @@
                     <div class="flex items-center space-x-2.5">
                         <div class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-800">
                             <i class="fa-solid fa-volume-high text-xs text-slate-400"></i>
-                            <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="1" class="w-14 sm:w-18 h-1.5 bg-slate-700 rounded appearance-none accent-brand-500 cursor-pointer">
+                            <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="1" title="Volume monitor/preview — TIDAK memengaruhi audio hasil rekam" class="w-14 sm:w-18 h-1.5 bg-slate-700 rounded appearance-none accent-brand-500 cursor-pointer">
                         </div>
 
                         <button id="btnRemoveAudio" title="Hapus Semua Audio" class="p-2 text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition">
@@ -878,6 +883,7 @@
                                 <div>
                                     <p class="font-bold">1080p Full HD</p>
                                     <p class="text-[10px] text-slate-400">Kualitas Tajam</p>
+                                    <p id="lowEndNotice1080" class="hidden text-[9px] text-amber-400 mt-0.5"><i class="fa-solid fa-triangle-exclamation"></i> Berat untuk spek perangkat kamu</p>
                                 </div>
                             </label>
                         </div>
@@ -933,6 +939,9 @@
         </div>
     </div>
 
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-2 pointer-events-none w-[92%] max-w-sm"></div>
+
     <!-- MAIN JAVASCRIPT APP LOGIC -->
     <script>
         // Offscreen noise texture cache for fast grain rendering
@@ -982,6 +991,7 @@
             audioContext: null,
             audioSource: null,
             analyserNode: null,
+            monitorGainNode: null,
             mediaStreamDest: null,
             audioElement: null,
             isAudioLoaded: false,
@@ -1012,6 +1022,7 @@
             aspectRatio: '9:16',
             resMultiplier: 720,
             exportFormat: 'webm',
+            isLowEndDevice: false,
 
             // Background Configuration State
             bgType: 'none',
@@ -1061,7 +1072,8 @@
             recStartTime: 0,
             recTimerInterval: null,
             recordedBlobUrl: null,
-            actualExportExt: 'webm'
+            actualExportExt: 'webm',
+            recWatchdogInterval: null
         };
 
         const DOM = {};
@@ -1078,7 +1090,9 @@
             initTextOverlaySystem();
             initDragAndDropSystem();
             initRecordingEngine();
+            initTabVisibilityHandling();
             loadProjectFromLocalStorage();
+            applyLowEndDeviceDefaults();
 
             requestAnimationFrame(renderCanvasLoop);
         });
@@ -1202,7 +1216,16 @@
             });
 
             DOM.volumeControl.addEventListener('input', (e) => {
-                DOM.audioElement.volume = parseFloat(e.target.value);
+                const val = parseFloat(e.target.value);
+                if (APP_STATE.monitorGainNode) {
+                    // Sudah ada graph Web Audio → atur gain monitor saja (audio asli tak tersentuh)
+                    APP_STATE.monitorGainNode.gain.value = val;
+                } else {
+                    // Sebelum pernah play sama sekali (graph belum dibuat): sementara pakai
+                    // volume elemen bawaan, nanti otomatis digantikan monitorGainNode saat
+                    // pertama kali play (nilai awal gain diambil dari slider ini).
+                    DOM.audioElement.volume = val;
+                }
             });
 
             DOM.btnRemoveAudio.addEventListener('click', () => {
@@ -1275,7 +1298,7 @@
         // Menambahkan 1 atau lebih file audio ke playlist (append, urutan sesuai upload)
         async function addAudioFilesToPlaylist(files) {
             if (APP_STATE.isRecording) {
-                alert("Tidak bisa menambah lagu saat sedang merekam.");
+                showToast("Tidak bisa menambah lagu saat sedang merekam.", "warn");
                 return;
             }
             const wasEmpty = APP_STATE.playlist.length === 0;
@@ -1359,7 +1382,7 @@
 
         function removeTrack(id) {
             if (APP_STATE.isRecording) {
-                alert("Tidak bisa mengubah playlist saat sedang merekam.");
+                showToast("Tidak bisa mengubah playlist saat sedang merekam.", "warn");
                 return;
             }
             const idx = APP_STATE.playlist.findIndex(t => t.id === id);
@@ -1386,7 +1409,7 @@
 
         function moveTrack(id, direction) {
             if (APP_STATE.isRecording) {
-                alert("Tidak bisa mengubah urutan playlist saat sedang merekam.");
+                showToast("Tidak bisa mengubah urutan playlist saat sedang merekam.", "warn");
                 return;
             }
             const idx = APP_STATE.playlist.findIndex(t => t.id === id);
@@ -1479,10 +1502,24 @@
             APP_STATE.analyserNode.fftSize = 512;
             APP_STATE.analyserNode.smoothingTimeConstant = 0.8;
 
+            // Gain khusus MONITOR (speaker) — volume/mute di sini HANYA memengaruhi
+            // apa yang didengar user saat preview, TIDAK memengaruhi hasil rekaman.
+            APP_STATE.monitorGainNode = APP_STATE.audioContext.createGain();
+            APP_STATE.monitorGainNode.gain.value = DOM.volumeControl ? parseFloat(DOM.volumeControl.value) : 1;
+            // Reset volume bawaan elemen ke 1 — mulai sekarang HANYA monitorGainNode
+            // yang boleh mengatur kerasnya suara di speaker, supaya tidak dobel-redam.
+            DOM.audioElement.volume = 1;
+
             APP_STATE.mediaStreamDest = APP_STATE.audioContext.createMediaStreamDestination();
 
             APP_STATE.audioSource.connect(APP_STATE.analyserNode);
-            APP_STATE.analyserNode.connect(APP_STATE.audioContext.destination);
+
+            // Rute 1 — DIDENGAR (preview only): lewat monitorGainNode, boleh naik/turun/mute
+            APP_STATE.analyserNode.connect(APP_STATE.monitorGainNode);
+            APP_STATE.monitorGainNode.connect(APP_STATE.audioContext.destination);
+
+            // Rute 2 — DIREKAM: langsung dari analyserNode, TIDAK lewat monitorGainNode,
+            // sehingga hasil video selalu memakai audio penuh apa pun volume preview-nya.
             APP_STATE.analyserNode.connect(APP_STATE.mediaStreamDest);
         }
 
@@ -1521,6 +1558,55 @@
             const m = Math.floor(seconds / 60) || 0;
             const s = Math.floor(seconds % 60) || 0;
             return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        // ===== TOAST NOTIFICATION (non-blocking, pengganti alert() untuk info ringan) =====
+        function showToast(message, type = 'info', duration = 4500) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const colors = {
+                info: 'bg-slate-800 border-slate-700 text-slate-100',
+                warn: 'bg-amber-600/95 border-amber-500 text-white',
+                success: 'bg-brand-500/95 border-brand-600 text-slate-950'
+            };
+            const icons = { info: 'fa-circle-info', warn: 'fa-triangle-exclamation', success: 'fa-circle-check' };
+            const el = document.createElement('div');
+            el.className = `pointer-events-auto border ${colors[type] || colors.info} rounded-xl px-4 py-2.5 text-xs font-semibold shadow-2xl flex items-center gap-2 opacity-0 translate-y-[-8px] transition-all duration-300`;
+            el.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i><span>${message}</span>`;
+            container.appendChild(el);
+            requestAnimationFrame(() => {
+                el.classList.remove('opacity-0', 'translate-y-[-8px]');
+            });
+            setTimeout(() => {
+                el.classList.add('opacity-0');
+                setTimeout(() => el.remove(), 300);
+            }, duration);
+        }
+
+        // ===== DETEKSI PERANGKAT SPEK RENDAH (untuk atur default yang lebih ramah performa) =====
+        function detectLowEndDevice() {
+            const ua = navigator.userAgent || '';
+            const isMobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+            const lowCores = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+            const lowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4;
+            // Dianggap "low-end" kalau perangkat mobile DAN (core sedikit ATAU RAM kecil ATAU info RAM tidak tersedia sama sekali)
+            return isMobileUA && (lowCores || lowMemory || typeof navigator.deviceMemory === 'undefined');
+        }
+
+        function applyLowEndDeviceDefaults() {
+            APP_STATE.isLowEndDevice = detectLowEndDevice();
+            if (!APP_STATE.isLowEndDevice) return;
+
+            // Paksa default resolusi ke 720p (lebih ringan) — user tetap bisa pilih 1080p manual kalau mau
+            APP_STATE.resMultiplier = 720;
+            const r720 = document.getElementById('lblRes720');
+            const radio720 = document.querySelector('input[name="recRes"][value="720"]');
+            if (radio720) radio720.checked = true;
+
+            const badge1080 = document.getElementById('lowEndNotice1080');
+            if (badge1080) badge1080.classList.remove('hidden');
+
+            showToast('Perangkat kamu terdeteksi spek menengah/rendah — resolusi rekam otomatis diset 720p. Hindari kombinasi FX berat (Grain, Blur, banyak Overlay sekaligus) untuk hasil paling mulus.', 'warn', 7000);
         }
 
         function initTabsAndInputs() {
@@ -1726,7 +1812,7 @@
             const input = document.getElementById('aiPromptInput');
             const promptText = (input.value || '').trim();
             if (!promptText) {
-                alert("Harap masukkan deskripsi / prompt gambar terlebih dahulu!");
+                showToast("Harap masukkan deskripsi / prompt gambar terlebih dahulu!", "warn");
                 return;
             }
 
@@ -1792,7 +1878,7 @@
                 btn.disabled = false;
                 icon.className = "fa-solid fa-wand-magic-sparkles";
                 label.textContent = "Generate Background AI";
-                alert("Gagal membuat gambar AI, silakan coba lagi.");
+                showToast("Gagal membuat gambar AI, silakan coba lagi.", "warn");
             }
         }
 
@@ -2131,7 +2217,7 @@
 
             document.getElementById('btnDeleteSelectedText').addEventListener('click', () => {
                 if (APP_STATE.textOverlays.length <= 1) {
-                    alert("Minimal harus menyisakan 1 elemen teks.");
+                    showToast("Minimal harus menyisakan 1 elemen teks.", "warn");
                     return;
                 }
                 APP_STATE.textOverlays = APP_STATE.textOverlays.filter(t => t.id !== APP_STATE.selectedTextId);
@@ -2526,6 +2612,33 @@
             }
         }
 
+        // ===== ANTI DESYNC: jeda otomatis rekaman kalau tab pindah ke background =====
+        // Saat tab tersembunyi (pindah tab/minimize), browser menahan requestAnimationFrame
+        // sehingga canvas berhenti digambar ulang — tapi audio tetap berjalan kalau tidak
+        // dijeda, sehingga video hasil rekam jadi "freeze" secara visual sementara audio
+        // terus maju (video & audio jadi tidak sinkron). Untuk mencegah ini, MediaRecorder +
+        // audio dijeda BERSAMAAN saat tab hilang dari layar, lalu dilanjutkan otomatis begitu
+        // user kembali ke tab ini.
+        function initTabVisibilityHandling() {
+            document.addEventListener('visibilitychange', () => {
+                if (!APP_STATE.isRecording || !APP_STATE.mediaRecorder) return;
+
+                if (document.hidden) {
+                    if (APP_STATE.mediaRecorder.state === 'recording') APP_STATE.mediaRecorder.pause();
+                    DOM.audioElement.pause();
+                    if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) APP_STATE.bgElement.pause();
+                    const banner = document.getElementById('exportPauseBanner');
+                    if (banner) { banner.classList.remove('hidden'); banner.classList.add('flex'); }
+                } else {
+                    if (APP_STATE.mediaRecorder.state === 'paused') APP_STATE.mediaRecorder.resume();
+                    DOM.audioElement.play().catch(() => {});
+                    if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) APP_STATE.bgElement.play().catch(() => {});
+                    const banner = document.getElementById('exportPauseBanner');
+                    if (banner) { banner.classList.add('hidden'); banner.classList.remove('flex'); }
+                }
+            });
+        }
+
         function startRecordingProcess() {
             setupWebAudioNodes();
 
@@ -2566,10 +2679,17 @@
                 ...(audioTrack ? [audioTrack] : [])
             ]);
 
+            // Bitrate adaptif: perangkat spek rendah dapat bitrate lebih ringan supaya
+            // proses encoding tidak membebani CPU/GPU dan hasil rekam tetap mulus.
+            let targetBitrate = APP_STATE.resMultiplier >= 1080 ? 4000000 : 2800000;
+            if (APP_STATE.isLowEndDevice) {
+                targetBitrate = APP_STATE.resMultiplier >= 1080 ? 2800000 : 1800000;
+            }
+
             try {
                 APP_STATE.mediaRecorder = new MediaRecorder(combinedStream, { 
                     mimeType,
-                    videoBitsPerSecond: 4000000 // 4 Mbps bitrate for smooth encoding
+                    videoBitsPerSecond: targetBitrate
                 });
             } catch (err) {
                 console.error("MediaRecorder fallback:", err);
@@ -2592,6 +2712,9 @@
                 APP_STATE.isRecording = false;
                 DOM.recStatusBadge.classList.add('hidden');
                 clearInterval(APP_STATE.recTimerInterval);
+                clearInterval(APP_STATE.recWatchdogInterval);
+                const banner = document.getElementById('exportPauseBanner');
+                if (banner) { banner.classList.add('hidden'); banner.classList.remove('flex'); }
             };
 
             // Rekam selalu dimulai dari LAGU PERTAMA di playlist, lalu lanjut otomatis
@@ -2618,6 +2741,17 @@
                         const elapsed = Math.floor((Date.now() - APP_STATE.recStartTime) / 1000);
                         DOM.recTimerText.textContent = `REC ${formatTime(elapsed)}`;
                     }, 500);
+
+                    // Watchdog: kalau tab TIDAK sedang di-background tapi audio ternyata
+                    // berhenti/tersendat (mis. stall codec di perangkat lemah), paksa
+                    // lanjutkan supaya proses rekam tidak diam-diam macet selamanya.
+                    clearInterval(APP_STATE.recWatchdogInterval);
+                    APP_STATE.recWatchdogInterval = setInterval(() => {
+                        if (!APP_STATE.isRecording) return;
+                        if (!document.hidden && DOM.audioElement.paused && APP_STATE.mediaRecorder && APP_STATE.mediaRecorder.state === 'recording') {
+                            DOM.audioElement.play().catch(() => {});
+                        }
+                    }, 1500);
                 }).catch(err => {
                     console.error("Gagal memulai playback rekaman:", err);
                     APP_STATE.isRecording = false;
@@ -2671,7 +2805,7 @@
                 exportFormat: APP_STATE.exportFormat
             };
             localStorage.setItem('AGE_YT4_PROJECT_PRESET', JSON.stringify(data));
-            alert("Preset Project Studio Berhasil Disimpan!");
+            showToast("Preset Project Studio berhasil disimpan!", "success");
         }
 
         function loadProjectFromLocalStorage() {
