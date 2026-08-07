@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Cache-busting: mencegah browser/CDN menyimpan versi HTML lama, supaya update kode
+         selalu langsung terlihat setelah deploy tanpa perlu hard-refresh manual. -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>AGE YT#4 Musik Video — Visualizer Editor Studio</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -93,6 +98,19 @@
 </head>
 <body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col overflow-x-hidden selection:bg-brand-500 selection:text-black">
 
+    <!-- EXPORT STATUS BANNER — tampil besar & jelas selama proses rekam berlangsung -->
+    <div id="exportStatusBanner" class="hidden bg-red-600 text-white shadow-lg">
+        <div class="max-w-[1750px] mx-auto px-3 sm:px-5 py-2 flex items-center gap-2 sm:gap-3">
+            <span id="exportStatusDot" class="w-2.5 h-2.5 rounded-full bg-white animate-pulse shrink-0"></span>
+            <i id="exportStatusIcon" class="fa-solid fa-circle-video shrink-0"></i>
+            <span id="exportStatusText" class="flex-1 truncate text-[11px] sm:text-xs font-bold">Sedang merender video... Jangan pindah tab atau tutup browser sampai selesai.</span>
+            <span id="exportStatusTime" class="font-mono text-[11px] sm:text-xs shrink-0">00:00 / 00:00</span>
+        </div>
+        <div class="h-1 bg-black/25">
+            <div id="exportProgressBar" class="h-full bg-white transition-all duration-300" style="width:0%"></div>
+        </div>
+    </div>
+
     <header class="border-b border-brand-border bg-brand-panel/90 backdrop-blur-md sticky top-0 z-40 px-3 sm:px-5 py-2.5 flex items-center justify-between shadow-md">
         <div class="flex items-center space-x-2.5 sm:space-x-3">
             <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-brand-500 via-brand-accent to-brand-pink flex items-center justify-center shadow-lg shadow-brand-500/20 shrink-0">
@@ -170,11 +188,6 @@
                     <div id="recStatusBadge" class="hidden absolute top-3 left-3 bg-red-600/90 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full flex items-center gap-2 font-bold shadow-lg animate-pulse z-30">
                         <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
                         <span id="recTimerText">REC 00:00</span>
-                    </div>
-
-                    <div id="exportPauseBanner" class="hidden absolute inset-x-2 bottom-2 bg-amber-600/95 backdrop-blur-sm text-white text-[11px] sm:text-xs px-3 py-2 rounded-xl items-center gap-2 font-semibold shadow-lg z-30 text-center justify-center">
-                        <i class="fa-solid fa-pause"></i>
-                        <span>Render dijeda otomatis — tab ini di-background. Kembali ke tab ini untuk lanjut.</span>
                     </div>
                 </div>
 
@@ -944,6 +957,10 @@
 
     <!-- MAIN JAVASCRIPT APP LOGIC -->
     <script>
+        // Penanda versi build — cek di Console DevTools untuk memastikan browser sudah
+        // memuat kode TERBARU (bukan versi cache lama), terutama setelah baru deploy.
+        console.log('%cAGE YT#4 Musik Video Studio — build 2026-08-06-v3 (audio monitor terpisah + export banner)', 'color:#10b981;font-weight:bold;');
+
         // Offscreen noise texture cache for fast grain rendering
         let cachedNoiseCanvas = null;
         function getNoisePatternCanvas() {
@@ -1140,6 +1157,12 @@
             DOM.recordedVideoPlayer = document.getElementById('recordedVideoPlayer');
             DOM.exportFileName = document.getElementById('exportFileName');
             DOM.btnDownloadVideo = document.getElementById('btnDownloadVideo');
+
+            DOM.exportStatusBanner = document.getElementById('exportStatusBanner');
+            DOM.exportStatusText = document.getElementById('exportStatusText');
+            DOM.exportStatusTime = document.getElementById('exportStatusTime');
+            DOM.exportProgressBar = document.getElementById('exportProgressBar');
+            DOM.exportStatusDot = document.getElementById('exportStatusDot');
 
             DOM.btnSavePreset = document.getElementById('btnSavePreset');
             DOM.btnNewProject = document.getElementById('btnNewProject');
@@ -1506,9 +1529,11 @@
             // apa yang didengar user saat preview, TIDAK memengaruhi hasil rekaman.
             APP_STATE.monitorGainNode = APP_STATE.audioContext.createGain();
             APP_STATE.monitorGainNode.gain.value = DOM.volumeControl ? parseFloat(DOM.volumeControl.value) : 1;
-            // Reset volume bawaan elemen ke 1 — mulai sekarang HANYA monitorGainNode
-            // yang boleh mengatur kerasnya suara di speaker, supaya tidak dobel-redam.
+            // Reset volume & mute bawaan elemen — mulai sekarang HANYA monitorGainNode
+            // yang boleh mengatur kerasnya suara di speaker, supaya tidak dobel-redam
+            // dan supaya status mute preview TIDAK PERNAH menyentuh sinyal yang direkam.
             DOM.audioElement.volume = 1;
+            DOM.audioElement.muted = false;
 
             APP_STATE.mediaStreamDest = APP_STATE.audioContext.createMediaStreamDestination();
 
@@ -2612,6 +2637,39 @@
             }
         }
 
+        // ===== BANNER STATUS EXPORT (besar, di puncak halaman — tidak mungkin terlewat) =====
+        function showExportBanner(state) {
+            if (!DOM.exportStatusBanner) return;
+            DOM.exportStatusBanner.classList.remove('hidden');
+            if (state === 'paused') {
+                DOM.exportStatusBanner.classList.remove('bg-red-600');
+                DOM.exportStatusBanner.classList.add('bg-amber-600');
+                if (DOM.exportStatusText) DOM.exportStatusText.textContent = 'Render DIJEDA otomatis — tab ini di-background. Kembali ke tab ini untuk lanjut.';
+                if (DOM.exportStatusDot) DOM.exportStatusDot.classList.remove('animate-pulse');
+            } else {
+                DOM.exportStatusBanner.classList.add('bg-red-600');
+                DOM.exportStatusBanner.classList.remove('bg-amber-600');
+                if (DOM.exportStatusText) DOM.exportStatusText.textContent = 'Sedang merender video... Jangan pindah tab atau tutup browser sampai selesai.';
+                if (DOM.exportStatusDot) DOM.exportStatusDot.classList.add('animate-pulse');
+            }
+        }
+
+        function hideExportBanner() {
+            if (!DOM.exportStatusBanner) return;
+            DOM.exportStatusBanner.classList.add('hidden');
+            if (DOM.exportProgressBar) DOM.exportProgressBar.style.width = '0%';
+        }
+
+        function updateExportBannerProgress(elapsedSec) {
+            if (!DOM.exportStatusTime) return;
+            const total = getPlaylistTotalDuration();
+            DOM.exportStatusTime.textContent = `${formatTime(elapsedSec)} / ${formatTime(total)}`;
+            if (DOM.exportProgressBar && total > 0) {
+                const pct = Math.min(100, (elapsedSec / total) * 100);
+                DOM.exportProgressBar.style.width = `${pct}%`;
+            }
+        }
+
         // ===== ANTI DESYNC: jeda otomatis rekaman kalau tab pindah ke background =====
         // Saat tab tersembunyi (pindah tab/minimize), browser menahan requestAnimationFrame
         // sehingga canvas berhenti digambar ulang — tapi audio tetap berjalan kalau tidak
@@ -2627,14 +2685,12 @@
                     if (APP_STATE.mediaRecorder.state === 'recording') APP_STATE.mediaRecorder.pause();
                     DOM.audioElement.pause();
                     if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) APP_STATE.bgElement.pause();
-                    const banner = document.getElementById('exportPauseBanner');
-                    if (banner) { banner.classList.remove('hidden'); banner.classList.add('flex'); }
+                    showExportBanner('paused');
                 } else {
                     if (APP_STATE.mediaRecorder.state === 'paused') APP_STATE.mediaRecorder.resume();
                     DOM.audioElement.play().catch(() => {});
                     if (APP_STATE.bgType === 'video' && APP_STATE.bgElement) APP_STATE.bgElement.play().catch(() => {});
-                    const banner = document.getElementById('exportPauseBanner');
-                    if (banner) { banner.classList.add('hidden'); banner.classList.remove('flex'); }
+                    showExportBanner('recording');
                 }
             });
         }
@@ -2713,8 +2769,7 @@
                 DOM.recStatusBadge.classList.add('hidden');
                 clearInterval(APP_STATE.recTimerInterval);
                 clearInterval(APP_STATE.recWatchdogInterval);
-                const banner = document.getElementById('exportPauseBanner');
-                if (banner) { banner.classList.add('hidden'); banner.classList.remove('flex'); }
+                hideExportBanner();
             };
 
             // Rekam selalu dimulai dari LAGU PERTAMA di playlist, lalu lanjut otomatis
@@ -2735,11 +2790,13 @@
                     DOM.playIcon.className = "fa-solid fa-pause text-sm";
                     DOM.recStatusBadge.classList.remove('hidden');
                     updateMiniEqUI();
+                    showExportBanner('recording');
                     APP_STATE.recStartTime = Date.now();
 
                     APP_STATE.recTimerInterval = setInterval(() => {
                         const elapsed = Math.floor((Date.now() - APP_STATE.recStartTime) / 1000);
                         DOM.recTimerText.textContent = `REC ${formatTime(elapsed)}`;
+                        updateExportBannerProgress(elapsed);
                     }, 500);
 
                     // Watchdog: kalau tab TIDAK sedang di-background tapi audio ternyata
