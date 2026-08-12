@@ -2098,6 +2098,11 @@
             APP_STATE.selectedParticleId = layer.id;
             renderParticleList();
             showToast(`Efek "${def.label}" ditambahkan.`, 'success', 2500);
+
+            const totalParticles = APP_STATE.particleOverlays.reduce((sum, l) => sum + l.density, 0);
+            if (totalParticles > 220) {
+                showToast(`Total ${totalParticles} partikel aktif dari ${APP_STATE.particleOverlays.length} efek — kalau terasa berat/patah-patah, turunkan "Kepadatan" di beberapa efek atau kurangi jumlah efek yang aktif.`, 'warn', 6000);
+            }
         }
 
         function removeParticleLayer(id) {
@@ -2194,6 +2199,28 @@
             });
         }
 
+        // Cache sprite glow (offscreen canvas, dibuat SEKALI per warna) — dipakai ulang lewat
+        // drawImage() yang jauh lebih murah daripada shadowBlur/createRadialGradient yang
+        // dihitung ulang untuk SETIAP partikel di SETIAP frame (penyebab utama patah-patah).
+        const glowSpriteCache = new Map();
+        function getGlowSprite(color) {
+            if (glowSpriteCache.has(color)) return glowSpriteCache.get(color);
+            const size = 128;
+            const off = document.createElement('canvas');
+            off.width = size; off.height = size;
+            const octx = off.getContext('2d');
+            const grad = octx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+            grad.addColorStop(0, color);
+            grad.addColorStop(0.4, color);
+            grad.addColorStop(1, 'transparent');
+            octx.fillStyle = grad;
+            octx.beginPath();
+            octx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+            octx.fill();
+            glowSpriteCache.set(color, off);
+            return off;
+        }
+
         function renderParticleLayer(ctx, w, h, layer, dt, bassEnergy) {
             if (!layer.particles || layer.particles.length !== layer.density) initParticlesForLayer(layer);
             const def = PARTICLE_TYPE_DEFAULTS[layer.type] || PARTICLE_TYPE_DEFAULTS.dust;
@@ -2203,8 +2230,10 @@
             const color = def.colorable ? (layer.color || def.color) : null;
             const time = Date.now() * 0.001;
             const isUpward = PARTICLE_UPWARD_TYPES.includes(layer.type);
+            const glowSprite = def.colorable && ['dust', 'bokeh', 'fireflies', 'smoke', 'embers'].includes(layer.type) ? getGlowSprite(color) : null;
 
             ctx.save();
+            ctx.shadowBlur = 0; // FIX: shadowBlur TIDAK PERNAH dipakai lagi di loop ini — diganti sprite ter-cache di bawah
             layer.particles.forEach(p => {
                 p.x += p.vx * speed * dt;
                 p.y += p.vy * speed * dt;
@@ -2219,25 +2248,20 @@
                 const s = sizeBase * p.size;
                 const fillColor = p.color || color;
                 ctx.globalAlpha = baseAlpha;
-                ctx.shadowBlur = 0;
 
                 switch (layer.type) {
                     case 'dust': case 'fireflies': {
                         const twinkle = 0.6 + 0.4 * Math.sin(time * 2 + p.phase + (layer.type === 'fireflies' ? bassEnergy * 3 : 0));
                         ctx.globalAlpha = baseAlpha * twinkle;
-                        ctx.fillStyle = fillColor;
-                        ctx.shadowColor = fillColor;
-                        ctx.shadowBlur = Math.min(s * 2.2, 18);
-                        ctx.beginPath(); ctx.arc(px, py, s, 0, Math.PI * 2); ctx.fill();
+                        const spriteSize = s * 4.5;
+                        ctx.drawImage(glowSprite, px - spriteSize / 2, py - spriteSize / 2, spriteSize, spriteSize);
                         break;
                     }
                     case 'bokeh': {
                         const pulse = 0.5 + 0.5 * Math.sin(time * 0.6 + p.phase);
                         ctx.globalAlpha = baseAlpha * (0.35 + pulse * 0.65);
-                        const grad = ctx.createRadialGradient(px, py, 0, px, py, s);
-                        grad.addColorStop(0, fillColor); grad.addColorStop(1, 'transparent');
-                        ctx.fillStyle = grad;
-                        ctx.beginPath(); ctx.arc(px, py, s, 0, Math.PI * 2); ctx.fill();
+                        const spriteSize = s * 2.1;
+                        ctx.drawImage(glowSprite, px - spriteSize / 2, py - spriteSize / 2, spriteSize, spriteSize);
                         break;
                     }
                     case 'sparkle': {
@@ -2264,20 +2288,16 @@
                     }
                     case 'smoke': {
                         const grow = 0.7 + 0.3 * Math.sin(time * 0.3 + p.phase);
-                        const grad = ctx.createRadialGradient(px, py, 0, px, py, s * grow);
-                        grad.addColorStop(0, fillColor); grad.addColorStop(1, 'transparent');
                         ctx.globalAlpha = baseAlpha * Math.max(0.05, (1 - p.y)) * 0.85;
-                        ctx.fillStyle = grad;
-                        ctx.beginPath(); ctx.arc(px, py, s * grow, 0, Math.PI * 2); ctx.fill();
+                        const spriteSize = s * grow * 2.1;
+                        ctx.drawImage(glowSprite, px - spriteSize / 2, py - spriteSize / 2, spriteSize, spriteSize);
                         break;
                     }
                     case 'embers': {
                         const flick = (0.5 + 0.5 * Math.sin(time * 6 + p.phase)) * (0.6 + bassEnergy * 0.8);
                         ctx.globalAlpha = baseAlpha * flick;
-                        ctx.fillStyle = fillColor;
-                        ctx.shadowColor = fillColor;
-                        ctx.shadowBlur = Math.min(s * 2.5, 16);
-                        ctx.beginPath(); ctx.arc(px, py, s * 0.7, 0, Math.PI * 2); ctx.fill();
+                        const spriteSize = s * 3.6;
+                        ctx.drawImage(glowSprite, px - spriteSize / 2, py - spriteSize / 2, spriteSize, spriteSize);
                         break;
                     }
                     default: {
@@ -2286,7 +2306,6 @@
                     }
                 }
             });
-            ctx.shadowBlur = 0;
             ctx.restore();
         }
 
