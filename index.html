@@ -9,12 +9,18 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>AGE YT#4 Musik Video — Visualizer Editor Studio</title>
+    <meta name="description" content="AGE YT#4 Musik Video Studio — editor visualizer musik gratis berbasis browser. Buat video musik untuk YouTube, TikTok, dan Instagram Reels dengan visualizer audio-reaktif, efek partikel, watermark, dan teks lirik bergaya, langsung export ke MP4/WebM tanpa install aplikasi.">
+    <meta name="theme-color" content="#0A0908">
+    <meta property="og:title" content="AGE YT#4 Musik Video Studio">
+    <meta property="og:description" content="Editor visualizer musik gratis berbasis browser — visualizer audio-reaktif, efek partikel, watermark, dan teks lirik bergaya. Langsung export ke MP4/WebM.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230A0908' stroke='%23D4AF37' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23D4AF37' stroke-width='1.5' opacity='0.5'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%23D4AF37' opacity='0.6'/%3E%3Cpolygon points='26,20 26,44 46,32' fill='%23D4AF37'/%3E%3C/svg%3E">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Poppins:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700;900&family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Poppins:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -25,14 +31,14 @@
                 extend: {
                     colors: {
                         brand: {
-                            50: '#f0fdf4',
-                            500: '#10b981',
-                            600: '#059669',
-                            dark: '#080b10',
-                            panel: '#111827',
-                            border: '#1f2937',
-                            accent: '#6366f1',
-                            pink: '#ec4899'
+                            50: '#FBF3D9',
+                            500: '#D4AF37',
+                            600: '#A6791E',
+                            dark: '#0A0908',
+                            panel: '#141210',
+                            border: '#2E2A22',
+                            accent: '#F2D680',
+                            pink: '#7A1220'
                         }
                     },
                     fontFamily: {
@@ -41,7 +47,8 @@
                         montserrat: ['Montserrat', 'sans-serif'],
                         orbitron: ['Orbitron', 'sans-serif'],
                         poppins: ['Poppins', 'sans-serif'],
-                        playfair: ['Playfair Display', 'serif']
+                        playfair: ['Playfair Display', 'serif'],
+                        cinzel: ['Cinzel', 'serif']
                     }
                 }
             }
@@ -53,14 +60,14 @@
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #080b10;
+            background: #0A0908;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1f2937;
+            background: #2E2A22;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #374151;
+            background: #4A4231;
         }
         .ratio-9-16 { aspect-ratio: 9 / 16; }
         .ratio-1-1 { aspect-ratio: 1 / 1; }
@@ -80,8 +87,8 @@
             transition: outline 0.15s ease, background 0.15s ease;
         }
         .text-overlay-node.selected {
-            outline: 2px dashed #10b981;
-            background: rgba(16, 185, 129, 0.15);
+            outline: 2px dashed #D4AF37;
+            background: rgba(212, 175, 55, 0.15);
             border-radius: 6px;
         }
 
@@ -111,14 +118,15 @@
         </div>
     </div>
 
-    <header class="border-b border-brand-border bg-brand-panel/90 backdrop-blur-md sticky top-0 z-40 px-3 sm:px-5 py-2.5 flex items-center justify-between shadow-md">
+    <header class="border-b border-brand-border bg-brand-panel/90 backdrop-blur-md sticky top-0 z-40 px-3 sm:px-5 py-2.5 flex items-center justify-between shadow-md relative">
+        <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-500 to-transparent opacity-70"></div>
         <div class="flex items-center space-x-2.5 sm:space-x-3">
             <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-brand-500 via-brand-accent to-brand-pink flex items-center justify-center shadow-lg shadow-brand-500/20 shrink-0">
                 <i class="fa-solid font-bold fa-compact-disc text-white text-base sm:text-lg animate-spin" style="animation-duration: 8s;"></i>
             </div>
             <div>
-                <h1 class="font-orbitron font-extrabold tracking-wider text-sm sm:text-lg bg-gradient-to-r from-white via-slate-200 to-brand-500 bg-clip-text text-transparent flex items-center gap-2">
-                    AGE YT#4 <span class="font-sans text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold tracking-normal hidden sm:inline-block">Musik Video Studio</span>
+                <h1 class="font-cinzel font-extrabold tracking-wide text-sm sm:text-lg uppercase bg-gradient-to-r from-brand-accent via-brand-500 to-brand-600 bg-clip-text text-transparent flex items-center gap-2">
+                    AGE YT#4 <span class="font-sans normal-case text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-500 border border-brand-500/40 font-semibold tracking-normal hidden sm:inline-block">Musik Video Studio</span>
                 </h1>
                 <p class="text-[10px] sm:text-[11px] text-slate-400 hidden md:block">Editor Visualizer Musik Pro dengan FX Teks, Overlay & Recording Studio</p>
             </div>
@@ -165,7 +173,7 @@
             <!-- CANVAS PREVIEW WORKSPACE -->
             <div class="w-full flex-1 flex items-center justify-center min-h-[350px] max-h-[640px] p-2 bg-slate-950 border border-brand-border rounded-2xl relative overflow-hidden shadow-2xl group" id="dropzoneArea">
                 
-                <div id="canvasContainer" class="relative ratio-9-16 h-full max-h-[600px] max-w-full flex items-center justify-center border border-slate-800 rounded-xl overflow-hidden shadow-inner bg-[#080b10]">
+                <div id="canvasContainer" class="relative ratio-9-16 h-full max-h-[600px] max-w-full flex items-center justify-center border border-slate-800 rounded-xl overflow-hidden shadow-inner bg-[#0A0908]">
                     
                     <canvas id="visualizerCanvas" class="w-full h-full object-contain block"></canvas>
 
@@ -362,7 +370,7 @@
                                 <span id="visColorVal" class="font-mono text-slate-400">Gradient Custom</span>
                             </div>
                             <div class="flex gap-2 items-center">
-                                <input type="color" id="visPrimaryColor" value="#10b981" class="w-8 h-8 rounded border-none cursor-pointer bg-transparent">
+                                <input type="color" id="visPrimaryColor" value="#D4AF37" class="w-8 h-8 rounded border-none cursor-pointer bg-transparent">
                                 <input type="color" id="visSecondaryColor" value="#6366f1" class="w-8 h-8 rounded border-none cursor-pointer bg-transparent">
                                 <select id="visColorPreset" class="flex-1 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
                                     <option value="gradient">Gradient Custom</option>
@@ -495,7 +503,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-[11px] text-slate-400 mb-1">Warna Latar Solid:</label>
-                                    <input type="color" id="bgColorPicker" value="#080b10" class="w-full h-8 rounded border border-slate-800 cursor-pointer bg-slate-950">
+                                    <input type="color" id="bgColorPicker" value="#0A0908" class="w-full h-8 rounded border border-slate-800 cursor-pointer bg-slate-950">
                                 </div>
                             </div>
 
@@ -701,6 +709,47 @@
                                 <span>Kunci Posisi</span>
                             </label>
                         </div>
+                    </div>
+
+                    <div class="border-t border-slate-800 pt-3.5 mt-1 space-y-2.5">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-0.5 flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Efek Partikel
+                            </h3>
+                            <p class="text-xs text-slate-400">Efek melayang otomatis (bukan gambar) — bisa tambah lebih dari satu sekaligus.</p>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5" id="particlePresetGrid">
+                            <button data-particle-type="dust" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-solid fa-circle-dot text-brand-500"></i>Debu
+                            </button>
+                            <button data-particle-type="snow" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-solid fa-snowflake text-brand-500"></i>Salju
+                            </button>
+                            <button data-particle-type="bokeh" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-regular fa-circle text-brand-500"></i>Bokeh
+                            </button>
+                            <button data-particle-type="sparkle" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-solid fa-star text-brand-500"></i>Kilau
+                            </button>
+                            <button data-particle-type="fireflies" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-solid fa-bug text-brand-500"></i>Kunang
+                            </button>
+                            <button data-particle-type="confetti" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-solid fa-shapes text-brand-500"></i>Confetti
+                            </button>
+                            <button data-particle-type="rain" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-solid fa-cloud-rain text-brand-500"></i>Hujan
+                            </button>
+                            <button data-particle-type="smoke" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-solid fa-smog text-brand-500"></i>Asap
+                            </button>
+                            <button data-particle-type="embers" class="btn-particle-preset p-2 rounded-lg border border-slate-800 bg-slate-900 hover:border-brand-500 text-slate-300 transition text-center text-[10px] flex flex-col items-center gap-1">
+                                <i class="fa-solid fa-fire text-brand-500"></i>Percikan Api
+                            </button>
+                        </div>
+
+                        <div id="particleListContainer" class="space-y-1.5"></div>
                     </div>
                 </div>
 
@@ -959,7 +1008,7 @@
     <script>
         // Penanda versi build — cek di Console DevTools untuk memastikan browser sudah
         // memuat kode TERBARU (bukan versi cache lama), terutama setelah baru deploy.
-        console.log('%cAGE YT#4 Musik Video Studio — build 2026-08-06-v3 (audio monitor terpisah + export banner)', 'color:#10b981;font-weight:bold;');
+        console.log('%cAGE YT#4 Musik Video Studio — build 2026-08-06-v4 (tema mewah + efek partikel)', 'color:#D4AF37;font-weight:bold;');
 
         // Offscreen noise texture cache for fast grain rendering
         let cachedNoiseCanvas = null;
@@ -1028,7 +1077,7 @@
 
             // Visualizer Configuration State
             visStyle: 'spectrum',
-            visPrimaryColor: '#10b981',
+            visPrimaryColor: '#D4AF37',
             visSecondaryColor: '#6366f1',
             visSensitivity: 1.5,
             visPosY: 50,
@@ -1046,7 +1095,7 @@
             bgPresetName: 'cyberpunk',
             bgElement: null,
             bgFitMode: 'cover',
-            bgColor: '#080b10',
+            bgColor: '#0A0908',
             bgOpacity: 1.0,
             bgDim: 0.3,
             bgBlur: 0,
@@ -1060,6 +1109,9 @@
             // Multi Overlay Layers
             overlays: [],
             selectedOverlayId: null,
+            particleOverlays: [],
+            selectedParticleId: null,
+            lastFrameTime: null,
 
             // Text Overlay Layers
             textOverlays: [
@@ -1104,6 +1156,7 @@
             initBackgroundFxSystem();
             initAiBackgroundSystem();
             initOverlaySystem();
+            initParticleSystem();
             initTextOverlaySystem();
             initDragAndDropSystem();
             initRecordingEngine();
@@ -1149,6 +1202,7 @@
             DOM.overlayFileInput = document.getElementById('overlayFileInput');
             DOM.overlayListContainer = document.getElementById('overlayListContainer');
             DOM.selectedOverlayEditor = document.getElementById('selectedOverlayEditor');
+            DOM.particleListContainer = document.getElementById('particleListContainer');
 
             DOM.recStatusBadge = document.getElementById('recStatusBadge');
             DOM.recTimerText = document.getElementById('recTimerText');
@@ -1725,7 +1779,7 @@
                     btn.className = "btn-aspect px-2.5 py-1 text-xs rounded-md bg-brand-500/20 text-brand-500 font-semibold border border-brand-500/40 transition";
                     
                     APP_STATE.aspectRatio = btn.getAttribute('data-ratio');
-                    DOM.canvasContainer.className = `relative h-full max-h-[620px] max-w-full flex items-center justify-center border border-slate-800 rounded-xl overflow-hidden shadow-inner bg-[#080b10] ratio-${APP_STATE.aspectRatio.replace(':', '-')}`;
+                    DOM.canvasContainer.className = `relative h-full max-h-[620px] max-w-full flex items-center justify-center border border-slate-800 rounded-xl overflow-hidden shadow-inner bg-[#0A0908] ratio-${APP_STATE.aspectRatio.replace(':', '-')}`;
                     updateCanvasDimensions();
                 });
             });
@@ -1986,6 +2040,270 @@
             if (bgFxColorInt) bgFxColorInt.addEventListener('input', (e) => {
                 APP_STATE.bgFxColorIntensity = parseInt(e.target.value) / 100;
                 document.getElementById('bgFxColorIntensityVal').textContent = `${e.target.value}%`;
+            });
+        }
+
+        // ===== SISTEM EFEK PARTIKEL (generatif, tanpa perlu upload gambar) =====
+        const PARTICLE_TYPE_DEFAULTS = {
+            dust:      { label: 'Debu Melayang',   icon: 'fa-solid fa-circle-dot', density: 50, speed: 1,   size: 3,  color: '#D4AF37', colorable: true,  opacity: 55 },
+            snow:      { label: 'Salju',           icon: 'fa-solid fa-snowflake',  density: 60, speed: 1,   size: 4,  color: '#FFFFFF', colorable: true,  opacity: 85 },
+            bokeh:     { label: 'Cahaya Bokeh',    icon: 'fa-regular fa-circle',   density: 20, speed: 0.5, size: 18, color: '#D4AF37', colorable: true,  opacity: 40 },
+            sparkle:   { label: 'Kilau Bintang',   icon: 'fa-solid fa-star',       density: 30, speed: 1.2, size: 5,  color: '#FFF6D8', colorable: true,  opacity: 90 },
+            fireflies: { label: 'Kunang-Kunang',   icon: 'fa-solid fa-bug',        density: 18, speed: 0.8, size: 4,  color: '#B7FF6B', colorable: true,  opacity: 85 },
+            confetti:  { label: 'Confetti',        icon: 'fa-solid fa-shapes',     density: 45, speed: 1.3, size: 6,  color: '#D4AF37', colorable: false, opacity: 95 },
+            rain:      { label: 'Hujan',           icon: 'fa-solid fa-cloud-rain', density: 90, speed: 2.2, size: 2,  color: '#9FD8FF', colorable: true,  opacity: 55 },
+            smoke:     { label: 'Asap',            icon: 'fa-solid fa-smog',       density: 14, speed: 0.4, size: 40, color: '#CCCCCC', colorable: true,  opacity: 22 },
+            embers:    { label: 'Percikan Api',    icon: 'fa-solid fa-fire',       density: 35, speed: 1,   size: 3,  color: '#FF7A1A', colorable: true,  opacity: 85 }
+        };
+        const PARTICLE_UPWARD_TYPES = ['dust', 'fireflies', 'smoke', 'embers'];
+        const PARTICLE_CONFETTI_PALETTE = ['#D4AF37', '#B8860B', '#8B0000', '#FFFFFF', '#F2D680'];
+
+        function createParticle(type) {
+            const p = { x: Math.random(), y: Math.random(), size: 0.6 + Math.random() * 0.8, phase: Math.random() * Math.PI * 2, rot: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 2, color: null };
+            if (type === 'confetti') p.color = PARTICLE_CONFETTI_PALETTE[Math.floor(Math.random() * PARTICLE_CONFETTI_PALETTE.length)];
+            switch (type) {
+                case 'snow': case 'rain': p.vx = (Math.random() - 0.5) * 0.05; p.vy = 0.15 + Math.random() * 0.2; break;
+                case 'dust': case 'fireflies': p.vx = (Math.random() - 0.5) * 0.05; p.vy = -(0.02 + Math.random() * 0.05); break;
+                case 'bokeh': p.vx = (Math.random() - 0.5) * 0.03; p.vy = (Math.random() - 0.5) * 0.03; break;
+                case 'confetti': p.vx = (Math.random() - 0.5) * 0.1; p.vy = 0.2 + Math.random() * 0.25; break;
+                case 'smoke': case 'embers': p.vx = (Math.random() - 0.5) * 0.03; p.vy = -(0.08 + Math.random() * 0.1); break;
+                case 'sparkle': p.vx = 0; p.vy = 0; break;
+                default: p.vx = 0; p.vy = 0.1;
+            }
+            return p;
+        }
+
+        function initParticlesForLayer(layer) {
+            layer.particles = [];
+            for (let i = 0; i < layer.density; i++) layer.particles.push(createParticle(layer.type));
+        }
+
+        function addParticleLayer(type) {
+            const def = PARTICLE_TYPE_DEFAULTS[type];
+            if (!def) return;
+            const layer = {
+                id: Date.now() + Math.random(),
+                type,
+                name: def.label,
+                density: def.density,
+                speed: def.speed,
+                size: def.size,
+                opacity: def.opacity,
+                color: def.color,
+                layerOrder: 'above',
+                particles: []
+            };
+            initParticlesForLayer(layer);
+            APP_STATE.particleOverlays.push(layer);
+            APP_STATE.selectedParticleId = layer.id;
+            renderParticleList();
+            showToast(`Efek "${def.label}" ditambahkan.`, 'success', 2500);
+        }
+
+        function removeParticleLayer(id) {
+            APP_STATE.particleOverlays = APP_STATE.particleOverlays.filter(l => l.id !== id);
+            if (APP_STATE.selectedParticleId === id) APP_STATE.selectedParticleId = null;
+            renderParticleList();
+        }
+
+        function getSelectedParticleLayer() {
+            return APP_STATE.particleOverlays.find(l => l.id === APP_STATE.selectedParticleId) || null;
+        }
+
+        function renderParticleList() {
+            if (!DOM.particleListContainer) return;
+            DOM.particleListContainer.innerHTML = '';
+            if (!APP_STATE.particleOverlays.length) return;
+
+            APP_STATE.particleOverlays.forEach((layer, idx) => {
+                const def = PARTICLE_TYPE_DEFAULTS[layer.type];
+                const isOpen = APP_STATE.selectedParticleId === layer.id;
+                const wrap = document.createElement('div');
+                wrap.className = `border rounded-xl overflow-hidden transition ${isOpen ? 'border-brand-500/50 bg-brand-500/5' : 'border-slate-800 bg-slate-900/70'}`;
+
+                const head = document.createElement('button');
+                head.className = 'w-full flex items-center gap-2 px-2.5 py-2 text-xs text-left';
+                head.innerHTML = `
+                    <i class="${def.icon} ${isOpen ? 'text-brand-500' : 'text-slate-500'}"></i>
+                    <span class="flex-1 font-semibold ${isOpen ? 'text-brand-400' : 'text-slate-200'} truncate">${escapeHtml(layer.name)}</span>
+                    <i class="fa-solid fa-chevron-${isOpen ? 'up' : 'down'} text-[10px] text-slate-500"></i>
+                `;
+                head.addEventListener('click', () => {
+                    APP_STATE.selectedParticleId = isOpen ? null : layer.id;
+                    renderParticleList();
+                });
+                wrap.appendChild(head);
+
+                if (isOpen) {
+                    const body = document.createElement('div');
+                    body.className = 'px-2.5 pb-3 space-y-2.5 border-t border-slate-800 pt-2.5';
+                    body.innerHTML = `
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <div class="flex justify-between text-slate-400 mb-1"><span>Kepadatan</span><span class="font-mono">${layer.density}</span></div>
+                                <input type="range" min="5" max="150" step="5" value="${layer.density}" data-prop="density" class="particle-ctrl w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-slate-400 mb-1"><span>Kecepatan</span><span class="font-mono">${layer.speed.toFixed(1)}x</span></div>
+                                <input type="range" min="0.1" max="3" step="0.1" value="${layer.speed}" data-prop="speed" class="particle-ctrl w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-slate-400 mb-1"><span>Ukuran</span><span class="font-mono">${layer.size}</span></div>
+                                <input type="range" min="1" max="60" step="1" value="${layer.size}" data-prop="size" class="particle-ctrl w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-slate-400 mb-1"><span>Opacity</span><span class="font-mono">${layer.opacity}%</span></div>
+                                <input type="range" min="5" max="100" step="5" value="${layer.opacity}" data-prop="opacity" class="particle-ctrl w-full h-1.5 bg-slate-800 rounded appearance-none accent-brand-500 cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            ${def.colorable ? `
+                            <div>
+                                <label class="block text-slate-400 mb-1">Warna</label>
+                                <input type="color" value="${layer.color}" data-prop="color" class="particle-ctrl w-full h-7 bg-slate-950 border border-slate-800 rounded cursor-pointer">
+                            </div>` : `<div></div>`}
+                            <div>
+                                <label class="block text-slate-400 mb-1">Urutan Layer</label>
+                                <select data-prop="layerOrder" class="particle-ctrl w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs outline-none focus:border-brand-500">
+                                    <option value="above" ${layer.layerOrder === 'above' ? 'selected' : ''}>Depan Visualizer</option>
+                                    <option value="below" ${layer.layerOrder === 'below' ? 'selected' : ''}>Belakang Visualizer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button data-remove-particle class="w-full text-center text-red-400 hover:text-red-300 text-xs py-1.5 border border-red-500/20 hover:border-red-500/40 rounded-lg transition">
+                            <i class="fa-solid fa-trash mr-1"></i> Hapus Efek Ini
+                        </button>
+                    `;
+                    body.querySelectorAll('.particle-ctrl').forEach(ctrl => {
+                        const prop = ctrl.getAttribute('data-prop');
+                        const evt = (ctrl.tagName === 'SELECT' || ctrl.type === 'color') ? 'change' : 'input';
+                        ctrl.addEventListener(evt, (e) => {
+                            let val = e.target.value;
+                            if (['density', 'size', 'opacity'].includes(prop)) val = parseInt(val);
+                            if (prop === 'speed') val = parseFloat(val);
+                            layer[prop] = val;
+                            if (prop === 'density') initParticlesForLayer(layer);
+                            if (prop === 'density' || prop === 'speed' || prop === 'opacity') renderParticleList();
+                        });
+                    });
+                    body.querySelector('[data-remove-particle]').addEventListener('click', () => removeParticleLayer(layer.id));
+                    wrap.appendChild(body);
+                }
+
+                DOM.particleListContainer.appendChild(wrap);
+            });
+        }
+
+        function renderParticleLayer(ctx, w, h, layer, dt, bassEnergy) {
+            if (!layer.particles || layer.particles.length !== layer.density) initParticlesForLayer(layer);
+            const def = PARTICLE_TYPE_DEFAULTS[layer.type] || PARTICLE_TYPE_DEFAULTS.dust;
+            const baseAlpha = (layer.opacity !== undefined ? layer.opacity : def.opacity) / 100;
+            const speed = layer.speed !== undefined ? layer.speed : def.speed;
+            const sizeBase = (layer.size !== undefined ? layer.size : def.size) * (w / 1080);
+            const color = def.colorable ? (layer.color || def.color) : null;
+            const time = Date.now() * 0.001;
+            const isUpward = PARTICLE_UPWARD_TYPES.includes(layer.type);
+
+            ctx.save();
+            layer.particles.forEach(p => {
+                p.x += p.vx * speed * dt;
+                p.y += p.vy * speed * dt;
+                p.rot += p.vr * speed * dt;
+
+                if (p.x < -0.05) p.x = 1.05; else if (p.x > 1.05) p.x = -0.05;
+                if (isUpward) { if (p.y < -0.08) { p.y = 1.05; p.x = Math.random(); } }
+                else if (layer.type !== 'bokeh' && layer.type !== 'sparkle') { if (p.y > 1.08) { p.y = -0.05; p.x = Math.random(); } }
+                else { if (p.y < -0.05) p.y = 1.05; else if (p.y > 1.05) p.y = -0.05; }
+
+                const px = p.x * w, py = p.y * h;
+                const s = sizeBase * p.size;
+                const fillColor = p.color || color;
+                ctx.globalAlpha = baseAlpha;
+                ctx.shadowBlur = 0;
+
+                switch (layer.type) {
+                    case 'dust': case 'fireflies': {
+                        const twinkle = 0.6 + 0.4 * Math.sin(time * 2 + p.phase + (layer.type === 'fireflies' ? bassEnergy * 3 : 0));
+                        ctx.globalAlpha = baseAlpha * twinkle;
+                        ctx.fillStyle = fillColor;
+                        ctx.shadowColor = fillColor;
+                        ctx.shadowBlur = Math.min(s * 2.2, 18);
+                        ctx.beginPath(); ctx.arc(px, py, s, 0, Math.PI * 2); ctx.fill();
+                        break;
+                    }
+                    case 'bokeh': {
+                        const pulse = 0.5 + 0.5 * Math.sin(time * 0.6 + p.phase);
+                        ctx.globalAlpha = baseAlpha * (0.35 + pulse * 0.65);
+                        const grad = ctx.createRadialGradient(px, py, 0, px, py, s);
+                        grad.addColorStop(0, fillColor); grad.addColorStop(1, 'transparent');
+                        ctx.fillStyle = grad;
+                        ctx.beginPath(); ctx.arc(px, py, s, 0, Math.PI * 2); ctx.fill();
+                        break;
+                    }
+                    case 'sparkle': {
+                        const tw = Math.max(0, Math.sin(time * 3 + p.phase * 5));
+                        if (tw < 0.15) break;
+                        ctx.globalAlpha = baseAlpha * tw;
+                        ctx.strokeStyle = fillColor;
+                        ctx.lineWidth = Math.max(1, s * 0.35);
+                        ctx.beginPath(); ctx.moveTo(px - s, py); ctx.lineTo(px + s, py); ctx.moveTo(px, py - s); ctx.lineTo(px, py + s); ctx.stroke();
+                        break;
+                    }
+                    case 'confetti': {
+                        ctx.save(); ctx.translate(px, py); ctx.rotate(p.rot);
+                        ctx.fillStyle = fillColor;
+                        ctx.fillRect(-s * 0.6, -s * 0.35, s * 1.2, s * 0.7);
+                        ctx.restore();
+                        break;
+                    }
+                    case 'rain': {
+                        ctx.strokeStyle = fillColor;
+                        ctx.lineWidth = Math.max(1, s * 0.5);
+                        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - s * 1.5, py - s * 9); ctx.stroke();
+                        break;
+                    }
+                    case 'smoke': {
+                        const grow = 0.7 + 0.3 * Math.sin(time * 0.3 + p.phase);
+                        const grad = ctx.createRadialGradient(px, py, 0, px, py, s * grow);
+                        grad.addColorStop(0, fillColor); grad.addColorStop(1, 'transparent');
+                        ctx.globalAlpha = baseAlpha * Math.max(0.05, (1 - p.y)) * 0.85;
+                        ctx.fillStyle = grad;
+                        ctx.beginPath(); ctx.arc(px, py, s * grow, 0, Math.PI * 2); ctx.fill();
+                        break;
+                    }
+                    case 'embers': {
+                        const flick = (0.5 + 0.5 * Math.sin(time * 6 + p.phase)) * (0.6 + bassEnergy * 0.8);
+                        ctx.globalAlpha = baseAlpha * flick;
+                        ctx.fillStyle = fillColor;
+                        ctx.shadowColor = fillColor;
+                        ctx.shadowBlur = Math.min(s * 2.5, 16);
+                        ctx.beginPath(); ctx.arc(px, py, s * 0.7, 0, Math.PI * 2); ctx.fill();
+                        break;
+                    }
+                    default: {
+                        ctx.fillStyle = fillColor;
+                        ctx.beginPath(); ctx.arc(px, py, s, 0, Math.PI * 2); ctx.fill();
+                    }
+                }
+            });
+            ctx.shadowBlur = 0;
+            ctx.restore();
+        }
+
+        function drawParticleLayersOnCanvas(ctx, w, h, layerOrder, dt, bassEnergy) {
+            if (!APP_STATE.particleOverlays.length) return;
+            APP_STATE.particleOverlays.forEach(layer => {
+                if (layer.layerOrder !== layerOrder) return;
+                renderParticleLayer(ctx, w, h, layer, dt, bassEnergy);
+            });
+        }
+
+        function initParticleSystem() {
+            document.querySelectorAll('.btn-particle-preset').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.getAttribute('data-particle-type');
+                    addParticleLayer(type);
+                });
             });
         }
 
@@ -2925,9 +3243,16 @@
             }
 
             drawBackgroundWithFX(ctx, w, h, bassEnergy);
+
+            const nowTs = Date.now();
+            const dt = APP_STATE.lastFrameTime ? Math.min((nowTs - APP_STATE.lastFrameTime) / 1000, 0.1) : 0.016;
+            APP_STATE.lastFrameTime = nowTs;
+
             drawOverlaysOnCanvas(ctx, w, h, 'below', freqData, bassEnergy);
+            drawParticleLayersOnCanvas(ctx, w, h, 'below', dt, bassEnergy);
             drawVisualizerStyle(ctx, w, h, freqData);
             drawOverlaysOnCanvas(ctx, w, h, 'above', freqData, bassEnergy);
+            drawParticleLayersOnCanvas(ctx, w, h, 'above', dt, bassEnergy);
             drawTextOverlaysOnCanvas(ctx, w, h, freqData, bassEnergy);
 
             // FPS Counter - ONLY shown during preview mode (not included in video recording)
@@ -3161,7 +3486,7 @@
 
                 const fx = item.fx || 'none';
                 if (fx === 'glow') {
-                    ctx.shadowColor = '#10b981';
+                    ctx.shadowColor = '#D4AF37';
                     ctx.shadowBlur = 18;
                 } else if (fx === 'drop_shadow') {
                     ctx.shadowColor = 'rgba(0,0,0,0.8)';
